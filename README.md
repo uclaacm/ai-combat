@@ -1,18 +1,15 @@
-# AI Combat # 
----
+# AI Combat #
 
 A multiplayer tile-based shooter that supports human and AI opponents.
 Made by the AI@UCLA Gaming group.
 
 # Running #
----
 
 To run AI Combat simply execute:
 
     python AICombat.py
 
 # Dependencies #
----
 
 AI Combat uses the pygame library for windowing and painting.
 
