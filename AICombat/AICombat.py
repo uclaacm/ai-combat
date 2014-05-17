@@ -6,6 +6,7 @@ by AI@UCLA Gaming group
 """
 
 import pygame
+import layer
 
 class Game():
 
@@ -16,30 +17,39 @@ class Game():
         pygame.init()
 
         width = 800
-        height = 800
+        height = 600
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("AI Combat")
         self.clock = pygame.time.Clock()
+        self.layer = []
+
+        self.layer.append(layer.Battle()) # Start with Battle for now
 
     """
     Starts the game by entering into the infinite game loop
     """
     def start(self):
         while 1:
+            # Sleep in such a way that the game does not exceed 30 FPS
+            elapsed = self.clock.tick(30)
 
             # Event processing
+            events = []
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+                events.append(event)
             
             # Paint stuff (does not actually paint until you call
             # pygame.display.flip)
-            # NOTE: Currently it does nothing but fill the screen with black 
+            for l in self.layer:
+                l.update(elapsed, events)
+                l.draw(self.screen)
+            
             self.screen.fill((0,0,0))
             
-            # Paint the screen, and sleep for 30 milliseconds
+            # Paint the screen
             pygame.display.flip()
-            self.clock.tick(30)
 
 
 """

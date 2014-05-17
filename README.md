@@ -7,7 +7,7 @@ Made by the AI@UCLA Gaming group.
 
 To run AI Combat simply execute:
 
-    python AICombat.py
+    python AICombat/AICombat.py
 
 # Dependencies #
 
