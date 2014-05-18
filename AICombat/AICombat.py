@@ -23,7 +23,11 @@ class Game():
         self.clock = pygame.time.Clock()
         self.layer = []
 
-        self.layer.append(layer.Battle()) # Start with Battle for now
+        # The game is organized in layers like a stack
+        # For instance, the lowest layer might be the main menu,
+        # while selecting settings might bring up a settings layer
+        # For now, we start with just a Battle (gameplay) layer
+        self.layer.append(layer.Battle())
 
     """
     Starts the game by entering into the infinite game loop
@@ -39,14 +43,16 @@ class Game():
                 if event.type == pygame.QUIT:
                     return
                 events.append(event)
+
+            # Update all layers
+            for l in self.layer:
+                l.update(events, elapsed)
             
             # Paint stuff (does not actually paint until you call
             # pygame.display.flip)
-            for l in self.layer:
-                l.update(elapsed, events)
-                l.draw(self.screen)
-            
             self.screen.fill((0,0,0))
+            for l in self.layer:
+                l.draw(self.screen)
             
             # Paint the screen
             pygame.display.flip()
