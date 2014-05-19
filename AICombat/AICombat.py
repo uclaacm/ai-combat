@@ -21,13 +21,7 @@ class Game():
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("AI Combat")
         self.clock = pygame.time.Clock()
-        self.layer = []
-
-        # The game is organized in layers like a stack
-        # For instance, the lowest layer might be the main menu,
-        # while selecting settings might bring up a settings layer
-        # For now, we start with just a Battle (gameplay) layer
-        self.layer.append(layer.Battle())
+        self.battle = layer.Battle()
 
     """
     Starts the game by entering into the infinite game loop
@@ -44,15 +38,13 @@ class Game():
                     return
                 events.append(event)
 
-            # Update all layers
-            for l in self.layer:
-                l.update(events, elapsed)
+            # Update battle state
+            self.battle.update(events, elapsed)
             
             # Paint stuff (does not actually paint until you call
             # pygame.display.flip)
             self.screen.fill((0,0,0))
-            for l in self.layer:
-                l.draw(self.screen)
+            self.battle.draw(self.screen)
             
             # Paint the screen
             pygame.display.flip()

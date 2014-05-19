@@ -9,7 +9,7 @@ build upon
 #global imports
 import pygame
 
-class VirtualBot():
+class Virtualbot():
 
     def __init__(self):
         pass

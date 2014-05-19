@@ -2,13 +2,13 @@
 An extremely dumb virtual bot used for testing purposes
 """
 
-from virtualbot import VirtualBot
+from virtualbot import Virtualbot
 from definitions import action
 
-class Dumbbot(VirtualBot):
+class Dumbbot(Virtualbot):
 
     def __init__(self):
-        VirtualBot.__init__(self)
+        Virtualbot.__init__(self)
 
     def getAction(self, squares):
         return action.MOVE
