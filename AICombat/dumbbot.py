@@ -9,6 +9,7 @@ class Dumbbot(Virtualbot):
 
     def __init__(self):
         Virtualbot.__init__(self)
+        self.imagePath = "dumbbot.png"
 
-    def getAction(self, squares):
+    def getAction(self, squares, time):
         return action.MOVE

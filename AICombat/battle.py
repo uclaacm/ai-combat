@@ -33,7 +33,8 @@ class Battle():
 
         # Initialize real bots
         # For now, hardcode in a Dumbbot
-        self.bots = [Realbot(Dumbbot())]
+        self.bots = pygame.sprite.LayeredUpdates()
+        self.bots.add(Realbot(Dumbbot()))
 
         # Initialize other bookkeeping variables
         self.totalElapsed = 0
@@ -41,6 +42,8 @@ class Battle():
 
     def update(self, events, elapsed):
         self.totalElapsed += elapsed
+        self.bots.get_sprite(0).update(self.arena, [], elapsed)
 
     def draw(self, screen):
         screen.blit(self.arenaImage, self.arenaRect)
+        self.bots.draw(screen)

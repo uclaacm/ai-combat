@@ -6,7 +6,7 @@ by AI@UCLA Gaming group
 """
 
 import pygame
-import layer
+from battle import Battle
 
 class Game():
 
@@ -21,7 +21,7 @@ class Game():
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("AI Combat")
         self.clock = pygame.time.Clock()
-        self.battle = layer.Battle()
+        self.battle = Battle()
 
     """
     Starts the game by entering into the infinite game loop

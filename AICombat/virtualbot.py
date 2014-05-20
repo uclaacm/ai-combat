@@ -8,11 +8,12 @@ build upon
 
 #global imports
 import pygame
+from definitions import action
 
 class Virtualbot():
 
     def __init__(self):
-        pass
+        self.imagePath = None
 
-    def getAction(self, squares):
-        pass
+    def getAction(self, squares, time):
+        return action.WAIT
