@@ -25,10 +25,21 @@ class Realbot(pygame.sprite.Sprite):
 
     def update(self, arena, squares, elapsed):
 
+        if self.cooldown - elapsed <= 0:
+            # When it finishes cooling down
+            if self.state == state.MOVING:
+                self.row = self.nextRow
+                self.col = self.nextCol
+                self.rect.left = self.col*20
+                self.rect.top = self.row*20
+
         self.cooldown = max(0, self.cooldown - elapsed)
 
         if self.cooldown > 0:
-            pass
+            if self.state == state.MOVING:
+                self.rect.left = self.col*20 + 20*(-self.nextCol+self.col)*self.cooldown/500
+                self.rect.top = self.row*20 + 20*(-self.nextRow+self.row)*self.cooldown/500
+
         else:
             self.state = state.WAITING
             act = self.vbot.getAction(squares, elapsed)
