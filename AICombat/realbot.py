@@ -25,27 +25,32 @@ class Realbot(pygame.sprite.Sprite):
 
     def update(self, arena, squares, elapsed):
 
-        if self.cooldown - elapsed <= 0:
-            # When it finishes cooling down
+        # Update cooldown and check if it dropped below 0
+        finished = self.cooldown - elapsed <= 0
+        self.cooldown = max(0, self.cooldown - elapsed)
+
+        # If hasn't finished yet (still executing an action)
+        if not finished:
+            # Execute smooth movement
+            if self.state == state.MOVING:
+                progress = 1 - float(self.cooldown) / duration['MOVE']
+                deltaCol = self.nextCol - self.col
+                deltaRow = self.nextRow - self.row
+                self.rect.left = int(20*(self.col + deltaCol*progress))
+                self.rect.top = int(20*(self.row + deltaRow*progress))
+
+        # If it finished cooling down, make any final adjustments
+        if finished:
             if self.state == state.MOVING:
                 self.row = self.nextRow
                 self.col = self.nextCol
                 self.rect.left = self.col*20
                 self.rect.top = self.row*20
 
-        self.cooldown = max(0, self.cooldown - elapsed)
-
-        if self.cooldown > 0:
-            if self.state == state.MOVING:
-                self.rect.left = self.col*20 + 20*(-self.nextCol+self.col)*self.cooldown/500
-                self.rect.top = self.row*20 + 20*(-self.nextRow+self.row)*self.cooldown/500
-
-        else:
-            self.state = state.WAITING
+        # If it finished cooling down, ask for the next action
+        if finished:
             act = self.vbot.getAction(squares, elapsed)
-            if act == action.WAIT:
-                return
-            elif act == action.MOVE:
+            if act == action.MOVE:
                 nextRow = self.row + DR[self.direction]
                 nextCol = self.col + DC[self.direction]
                 if (nextRow < 0 or nextRow >= len(arena) or
@@ -53,6 +58,7 @@ class Realbot(pygame.sprite.Sprite):
                    return
                 self.nextRow = nextRow
                 self.nextCol = nextCol
-                self.cooldown = 500
+                self.cooldown = duration['MOVE']
                 self.state = state.MOVING
-                return
+            else:
+                self.state = state.WAITING

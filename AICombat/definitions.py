@@ -23,5 +23,11 @@ state = enum('WAITING',
              'TURNING'
             )
 
+duration = {'WAIT': 0,
+            'MOVE': 300,
+            'LEFT': 50,
+            'RIGHT': 50
+           }
+
 DR = [-1, 1, 0, 0]
 DC = [0, 0, -1, 1]
