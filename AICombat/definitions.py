@@ -6,6 +6,11 @@ def enum(*sequential, **named):
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
 
+class AttrDict(dict):
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
 action = enum('WAIT',
               'MOVE',
               'LEFT',
@@ -13,21 +18,15 @@ action = enum('WAIT',
 
 terrain = enum('EMPTY')
 
-direction = enum('UP',
+direction = enum('RIGHT',
                  'DOWN',
                  'LEFT',
-                 'RIGHT')
+                 'UP')
 
-state = enum('WAITING',
-             'MOVING',
-             'TURNING'
-            )
+duration = AttrDict({'WAIT': 0,
+                     'MOVE': 300,
+                     'TURN': 50
+                    })
 
-duration = {'WAIT': 0,
-            'MOVE': 300,
-            'LEFT': 50,
-            'RIGHT': 50
-           }
-
-DR = [-1, 1, 0, 0]
-DC = [0, 0, -1, 1]
+DR = [0, 1, 0, -1]
+DC = [1, 0, -1, 0]
