@@ -29,7 +29,7 @@ class Game():
     def start(self):
         while 1:
             # Sleep in such a way that the game does not exceed 30 FPS
-            elapsed = self.clock.tick(30)
+            elapsed = self.clock.tick(40)
 
             # Event processing
             events = []

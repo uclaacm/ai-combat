@@ -19,14 +19,14 @@ action = enum('WAIT',
 terrain = enum('EMPTY')
 
 direction = enum('RIGHT',
-                 'DOWN',
+                 'UP',
                  'LEFT',
-                 'UP')
+                 'DOWN')
 
 duration = AttrDict({'WAIT': 0,
-                     'MOVE': 300,
-                     'TURN': 50
+                     'MOVE': 250,
+                     'TURN': 100
                     })
 
-DR = [0, 1, 0, -1]
+DR = [0, -1, 0, 1]
 DC = [1, 0, -1, 0]

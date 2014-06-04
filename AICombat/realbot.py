@@ -21,7 +21,9 @@ class Realbot(pygame.sprite.Sprite):
         # Attach virtual bot
         self.vbot = vbot
         if vbot.imagePath:
-            self.image, self.rect = resource.loadImage(vbot.imagePath)
+            self.baseImage, self.baseRect = resource.loadImage(vbot.imagePath)
+            self.image = self.baseImage
+            self.rect = self.image.get_rect()
 
         # Initialize action states
         self.action = action.WAIT
@@ -58,6 +60,10 @@ class Realbot(pygame.sprite.Sprite):
                 deltaTheta = (self.nextDirection - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
                 self.theta = int(self.direction*90 + deltaTheta*progress)
+                self.image = pygame.transform.rotate(self.baseImage, self.theta)
+                r = self.image.get_rect()
+                self.rect.left = self.col*20 - (r.width-20)/2
+                self.rect.top = self.row*20 - (r.height-20)/2
 
         # If it finished cooling down, make any final adjustments
         if finished:
@@ -69,6 +75,9 @@ class Realbot(pygame.sprite.Sprite):
             elif self.action == action.LEFT or self.action == action.RIGHT:
                 self.direction = self.nextDirection
                 self.theta = self.direction*90
+                self.image = pygame.transform.rotate(self.baseImage, self.theta)
+                self.rect.left = self.col*20
+                self.rect.top = self.row*20
 
         # If it finished cooling down, ask for the next action
         if finished:
@@ -85,9 +94,9 @@ class Realbot(pygame.sprite.Sprite):
                 self.action = decision
             elif decision == action.LEFT or decision == action.RIGHT:
                 if decision == action.LEFT:
-                    self.nextDirection = (self.direction + 3) % 4 #Modulus -1
+                    self.nextDirection = (self.direction + 5) % 4 #Modulus -1
                 elif decision == action.RIGHT:
-                    self.nextDirection = (self.direction + 5) % 4 #Modulus +1
+                    self.nextDirection = (self.direction + 3) % 4 #Modulus +1
                 self.cooldown = duration.TURN
                 self.action = decision
             else:
