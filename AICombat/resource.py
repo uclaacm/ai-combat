@@ -1,6 +1,7 @@
 """
-Taken from http://www.pygame.org/docs/tut/chimp/ChimpLineByLine.html
+resource.py
 
+Taken from http://www.pygame.org/docs/tut/chimp/ChimpLineByLine.html
 Contains utility resource loading functions
 """
 

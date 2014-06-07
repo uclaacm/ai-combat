@@ -3,6 +3,12 @@
 """
 AI Combat
 by AI@UCLA Gaming group
+
+AICombat is a top-down shooter in which programmable AI bots battle each other
+in a closed arena.  https://github.com/EaterOA/AICombat
+
+AICombat.py is the application class, which handles the pygame window, game
+clock, and main game loop.
 """
 
 import pygame
@@ -21,6 +27,8 @@ class Game():
         self.screen = pygame.display.set_mode((width, height))
         pygame.display.set_caption("AI Combat")
         self.clock = pygame.time.Clock()
+        # For now, start directly in Battle mode
+        # Other modes in the future may include menu, settings, splash, etc.
         self.battle = Battle()
 
     """
@@ -28,7 +36,8 @@ class Game():
     """
     def start(self):
         while 1:
-            # Sleep in such a way that the game does not exceed 30 FPS
+            # Sleep in such a way that the game does not exceed 40 FPS
+            # (This value is completely arbitrary)
             elapsed = self.clock.tick(40)
 
             # Event processing
@@ -51,7 +60,7 @@ class Game():
 
 
 """
-When AICombat.py is run, it will more or less skip everything until it sees the
+When AICombat.py is run, it will more or less skip everything until it sees this
 if statement at the end. The statement calls main(), which creates a Game
 object to handle the actual application/pygame logic
 

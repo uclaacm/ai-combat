@@ -1,13 +1,17 @@
 """
+realbot.py
+
 A "real bot" is the physical body of a bot, containing its sprite, position,
-health, ammo, etc.
-It is controlled by a "virtual bot," which is like the mind of the bot
+health, ammo, etc. It is controlled by a "virtual bot," which is like the mind
+of the bot. When the real bot is in a WAIT state, it will ask its virtual bot
+what action to take next. Given an action, the real bot will take appropriate
+steps to execute it properly.
 """
 
-#Package imports
+# Global imports
 import pygame
 
-#Local imports
+# Local imports
 from definitions import *
 import resource
 
@@ -38,7 +42,11 @@ class Realbot(pygame.sprite.Sprite):
         self.direction = direction.RIGHT
         self.nextDirection = None
 
-
+    """
+    Called once per game loop iteration
+    If the real bot is executing an action, it will continue executing it.
+    Once it is done, it will ask the virtual bot for the next move.
+    """
     def update(self, arena, squares, elapsed):
 
         # Update cooldown and check if it dropped below 0
