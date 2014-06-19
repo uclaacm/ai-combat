@@ -19,10 +19,20 @@ from definitions import action
 
 class Virtualbot():
 
+    """
+    The basic constructor for a virtualbot
+    Only contains an empty imagePath. The virtual bot programmer can decide how
+    the bot looks by providing the imagePath.
+    """
     def __init__(self):
-        # All virtual bots have an imagePath
-        # The virtual bot programmer decides how the bot should look
         self.imagePath = None
 
-    def getAction(self, squares, time):
-        return action.WAIT
+    """
+    Called whenever the realbot is ready to execute an action
+        IN:  - list of squares and objects the realbot sees
+             - time elapsed since last getAction
+        OUT: - a dict specifying the action to take and its parameters
+    The default action is just to wait
+    """
+    def getAction(self, entities, time):
+        return {'action' : action.WAIT}

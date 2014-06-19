@@ -20,8 +20,7 @@ class AttrDict(dict):
 # Legal bot actions
 action = enum('WAIT',
               'MOVE',
-              'LEFT',
-              'RIGHT')
+              'TURN')
 
 # Legal terrain types
 terrain = enum('EMPTY')

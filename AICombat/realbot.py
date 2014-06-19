@@ -63,7 +63,7 @@ class Realbot(pygame.sprite.Sprite):
                 self.rect.left = int(20*(self.col + deltaCol*progress))
                 self.rect.top = int(20*(self.row + deltaRow*progress))
             # Smooth turn
-            elif self.action == action.LEFT or self.action == action.RIGHT:
+            elif self.action == action.TURN:
                 progress = 1 - float(self.cooldown) / duration.TURN
                 deltaTheta = (self.nextDirection - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
@@ -80,7 +80,7 @@ class Realbot(pygame.sprite.Sprite):
                 self.col = self.nextCol
                 self.rect.left = self.col*20
                 self.rect.top = self.row*20
-            elif self.action == action.LEFT or self.action == action.RIGHT:
+            elif self.action == action.TURN:
                 self.direction = self.nextDirection
                 self.theta = self.direction*90
                 self.image = pygame.transform.rotate(self.baseImage, self.theta)
@@ -89,8 +89,15 @@ class Realbot(pygame.sprite.Sprite):
 
         # If it finished cooling down, ask for the next action
         if finished:
+
+            # Assume wait until proven otherwise
+            self.action = action.WAIT
+
+            # Ask virtualbot for what to do next
             decision = self.vbot.getAction(squares, elapsed)
-            if decision == action.MOVE:
+
+            # If the decision is to move
+            if decision['action'] == action.MOVE:
                 nextRow = self.row + DR[self.direction]
                 nextCol = self.col + DC[self.direction]
                 if (nextRow < 0 or nextRow >= len(arena) or
@@ -99,13 +106,13 @@ class Realbot(pygame.sprite.Sprite):
                 self.nextRow = nextRow
                 self.nextCol = nextCol
                 self.cooldown = duration.MOVE
-                self.action = decision
-            elif decision == action.LEFT or decision == action.RIGHT:
-                if decision == action.LEFT:
-                    self.nextDirection = (self.direction + 5) % 4 #Modulus -1
-                elif decision == action.RIGHT:
-                    self.nextDirection = (self.direction + 3) % 4 #Modulus +1
+                self.action = decision['action']
+
+            # If the decision is to turn (in a valid direction)
+            elif (decision['action'] == action.TURN and
+                  'dir' in decision and
+                  decision['dir'] != direction.UP and
+                  decision['dir'] != direction.DOWN):
+                self.nextDirection = (self.direction + 3 + decision['dir']) % 4
                 self.cooldown = duration.TURN
-                self.action = decision
-            else:
-                self.action = action.WAIT
+                self.action = decision['action']

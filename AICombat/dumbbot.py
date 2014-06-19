@@ -3,7 +3,7 @@ An extremely dumb virtual bot used for testing purposes
 """
 
 from virtualbot import Virtualbot
-from definitions import action
+from definitions import *
 
 class Dumbbot(Virtualbot):
 
@@ -13,8 +13,14 @@ class Dumbbot(Virtualbot):
         self.imagePath = "dumbbot.png"
 
     def getAction(self, squares, time):
+        decision = {}
+
         self.counter += 1
         if self.counter == 10:
             self.counter = 0
-            return action.RIGHT
-        return action.MOVE
+            decision['action'] = action.TURN
+            decision['dir'] = direction.RIGHT
+        else:
+            decision['action'] = action.MOVE
+
+        return decision
