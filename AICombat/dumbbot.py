@@ -10,13 +10,15 @@ class Dumbbot(Virtualbot):
     def __init__(self):
         Virtualbot.__init__(self)
         self.counter = 0
+        self.outer = 1
         self.imagePath = "dumbbot.png"
 
     def getAction(self, objects, time):
         decision = {}
 
         self.counter += 1
-        if self.counter == 10:
+        if self.counter == self.outer*5:
+            self.outer += 1
             self.counter = 0
             decision['action'] = action.TURN
             decision['dir'] = direction.RIGHT

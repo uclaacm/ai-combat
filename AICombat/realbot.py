@@ -100,8 +100,8 @@ class Realbot(pygame.sprite.Sprite):
                   'dir' in decision and
                   decision['dir'] != direction.UP and
                   decision['dir'] != direction.DOWN):
-                self.pivotTop = self.rect.top
                 self.pivotLeft = self.rect.left
+                self.pivotTop = self.rect.top
                 self.nextDirection = (self.direction + 3 + decision['dir']) % 4
                 self.cooldown = duration.TURN
                 self.action = decision['action']

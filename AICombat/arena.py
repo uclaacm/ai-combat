@@ -1,5 +1,7 @@
 """
 arena.py
+
+Maintains the list of bots and other objects.
 """
 
 # Global imports
@@ -7,7 +9,6 @@ import pygame
 
 # Local imports
 import resource
-from definitions import action
 from realbot import Realbot
 from dumbbot import Dumbbot
 

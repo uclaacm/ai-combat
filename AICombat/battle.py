@@ -1,15 +1,13 @@
 """
 Battle.py
 
-Responsible for all battle logic. Maintains the arena and a list of all bots
-currently inside.
+Responsible for all battle logic. Maintains the arena object
 """
 
 # Global imports
 import pygame
 
 # Local imports
-import resource
 from arena import Arena
 
 class Battle():
@@ -24,7 +22,7 @@ class Battle():
 
     """
     Called once per game loop iteration
-    Updates all bot actions
+    Updates arena
     """
     def update(self, events, elapsed):
         self.arena.update(events, elapsed)
@@ -32,7 +30,7 @@ class Battle():
 
     """
     Called once per game loop iteration
-    Clears the arena and redraws the bots in updated positions
+    Draws the arena
     """
     def draw(self, screen):
         self.arena.draw(screen)
