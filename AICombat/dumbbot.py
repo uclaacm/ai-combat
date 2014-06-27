@@ -12,7 +12,7 @@ class Dumbbot(Virtualbot):
         self.counter = 0
         self.imagePath = "dumbbot.png"
 
-    def getAction(self, squares, time):
+    def getAction(self, objects, time):
         decision = {}
 
         self.counter += 1

@@ -29,10 +29,10 @@ class Virtualbot():
 
     """
     Called whenever the realbot is ready to execute an action
-        IN:  - list of squares and objects the realbot sees
+        IN:  - list of objects the realbot sees
              - time elapsed since last getAction
         OUT: - a dict specifying the action to take and its parameters
     The default action is just to wait
     """
-    def getAction(self, entities, time):
+    def getAction(self, objects, time):
         return {'action' : action.WAIT}
