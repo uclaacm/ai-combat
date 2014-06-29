@@ -17,7 +17,7 @@ import resource
 
 class Realbot(pygame.sprite.Sprite):
 
-    def __init__(self, vbot):
+    def __init__(self, vbot, top=0, left=0):
 
         # Call Sprite initializer
         pygame.sprite.Sprite.__init__(self)
@@ -28,6 +28,8 @@ class Realbot(pygame.sprite.Sprite):
             self.baseImage, self.baseRect = resource.loadImage(vbot.imagePath)
             self.image = self.baseImage
             self.rect = self.image.get_rect()
+        self.rect.top = top
+        self.rect.left = left
 
         # Initialize action states
         self.action = action.WAIT

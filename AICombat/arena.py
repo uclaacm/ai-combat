@@ -22,7 +22,8 @@ class Arena(pygame.sprite.Sprite):
         # Initialize real bots
         # For now, hardcode in a Dumbbot for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(Dumbbot()))
+        self.bots.add(Realbot(Dumbbot(), 10, 10))
+        self.bots.add(Realbot(Dumbbot(), 200, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
@@ -36,7 +37,8 @@ class Arena(pygame.sprite.Sprite):
     Updates all bot actions
     """
     def update(self, events, elapsed):
-        self.bots.get_sprite(0).update(self, elapsed)
+        for bot in self.bots.sprites():
+            bot.update(self, elapsed)
 
     """
     Called once per game loop iteration
