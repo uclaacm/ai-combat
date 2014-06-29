@@ -9,28 +9,26 @@ import pygame
 
 # Local imports
 import resource
+from entity import Entity
 from realbot import Realbot
 from dumbbot import Dumbbot
 
-class Arena(pygame.sprite.Sprite):
+class Arena(Entity):
 
     def __init__(self):
 
-        # Load arena image
-        self.baseImage, self.baseRect = resource.loadImage("arena.png")
+        # Initialize arena as an entity
+        body = pygame.Rect(0, 0, 400, 400)
+        Entity.__init__(self, "arena.png", body)
 
         # Initialize real bots
-        # For now, hardcode in a Dumbbot for testing
+        # For now, hardcode in two dumbbots for testing
         self.bots = pygame.sprite.LayeredUpdates()
         self.bots.add(Realbot(Dumbbot(), 10, 10))
         self.bots.add(Realbot(Dumbbot(), 200, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
-
-        # Initialize bookkeeping variables
-        self.height = 400
-        self.width = 400
 
     """
     Called once per game loop iteration

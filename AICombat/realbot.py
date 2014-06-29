@@ -14,32 +14,24 @@ import pygame
 # Local imports
 from definitions import *
 import resource
+from entity import Entity
 
-class Realbot(pygame.sprite.Sprite):
+class Realbot(Entity):
 
-    def __init__(self, vbot, top=0, left=0):
-
-        # Call Sprite initializer
-        pygame.sprite.Sprite.__init__(self)
+    def __init__(self, vbot, left=0, top=0):
 
         # Attach virtual bot
         self.vbot = vbot
-        if vbot.imagePath:
-            self.baseImage, self.baseRect = resource.loadImage(vbot.imagePath)
-            self.image = self.baseImage
-            self.rect = self.image.get_rect()
-        self.rect.top = top
-        self.rect.left = left
+
+        # Call Entity init
+        body = pygame.Rect(left, top, 20, 20)
+        Entity.__init__(self, vbot.imagePath, body)
 
         # Initialize action states
         self.action = action.WAIT
         self.cooldown = 0
         ### Direction/turn state
-        self.theta = 0
-        self.direction = direction.RIGHT
         self.nextDirection = None
-        self.pivotLeft = None
-        self.pivotTop = None
 
     """
     Called once per game loop iteration
@@ -59,20 +51,17 @@ class Realbot(pygame.sprite.Sprite):
                 progress = 1 - float(self.cooldown) / duration.TURN
                 deltaTheta = (self.nextDirection - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
-                self.theta = int(self.direction*90 + deltaTheta*progress)
-                self.image = pygame.transform.rotate(self.baseImage, self.theta)
-                r = self.image.get_rect()
-                self.rect.left = self.pivotLeft - (r.width-20)/2
-                self.rect.top = self.pivotTop - (r.height-20)/2
+                theta = int(self.direction*90 + deltaTheta*progress)
+                self.image = pygame.transform.rotate(self.baseImage, theta)
+                self.center()
 
         # If it finished cooling down, make any final adjustments
         if finished:
             if self.action == action.TURN:
                 self.direction = self.nextDirection
-                self.theta = self.direction*90
-                self.image = pygame.transform.rotate(self.baseImage, self.theta)
-                self.rect.left = self.pivotLeft
-                self.rect.top = self.pivotTop
+                theta = self.direction*90
+                self.image = pygame.transform.rotate(self.baseImage, theta)
+                self.center()
 
         # If it finished cooling down, ask for the next action
         if finished:
@@ -89,21 +78,17 @@ class Realbot(pygame.sprite.Sprite):
             # If the decision is to move
             if decision['action'] == action.MOVE:
                 
-                nextTop = self.rect.top + 4*DR[self.direction]
-                nextLeft = self.rect.left + 4*DC[self.direction]
-                if (nextTop < 0 or nextTop+20 >= arena.height or
-                   nextLeft < 0 or nextLeft+20 >= arena.width):
-                   return
-                self.rect.top = nextTop
-                self.rect.left = nextLeft
+                nextTop = self.body.top + 4*DR[self.direction]
+                nextLeft = self.body.left + 4*DC[self.direction]
+                nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
+                if arena.body.contains(nextPosition):
+                    self.setPos(nextLeft, nextTop)
 
             # If the decision is to turn (in a valid direction)
             elif (decision['action'] == action.TURN and
                   'dir' in decision and
                   decision['dir'] != direction.UP and
                   decision['dir'] != direction.DOWN):
-                self.pivotLeft = self.rect.left
-                self.pivotTop = self.rect.top
                 self.nextDirection = (self.direction + 3 + decision['dir']) % 4
                 self.cooldown = duration.TURN
                 self.action = decision['action']
