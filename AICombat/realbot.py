@@ -27,11 +27,22 @@ class Realbot(Entity):
         body = pygame.Rect(left, top, 20, 20)
         Entity.__init__(self, vbot.imagePath, body)
 
+        # Initialize status
+        self.hp = 100
+        self.ammo = 10
         # Initialize action states
         self.action = action.WAIT
         self.cooldown = 0
         ### Direction/turn state
         self.nextDirection = None
+
+    """
+    Called when the realbot is struck by a bullet
+    """
+    def hit(self, dmg):
+        self.hp -= dmg
+        if self.hp <= 0:
+            pass
 
     """
     Called once per game loop iteration
