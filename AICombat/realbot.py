@@ -15,6 +15,7 @@ import pygame
 from definitions import *
 import resource
 from entity import Entity
+from bullet import Bullet
 
 class Realbot(Entity):
 
@@ -102,4 +103,9 @@ class Realbot(Entity):
                   decision['dir'] != direction.DOWN):
                 self.nextDirection = (self.direction + 3 + decision['dir']) % 4
                 self.cooldown = duration.TURN
+                self.action = decision['action']
+
+            elif decision['action'] == action.SHOOT:
+                arena.others.add(Bullet(self, self.direction, self.body.left, self.body.top))
+                self.cooldown = duration.SHOOT
                 self.action = decision['action']

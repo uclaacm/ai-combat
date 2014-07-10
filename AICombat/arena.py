@@ -32,16 +32,30 @@ class Arena(Entity):
 
     """
     Called once per game loop iteration
-    Updates all bot actions
+    Updates entities on the arena
     """
     def update(self, events, elapsed):
+    
+        # Do updates
         for bot in self.bots.sprites():
             bot.update(self, elapsed)
+        for entity in self.others.sprites():
+            entity.update(self, elapsed)
+
+        # Remove dead stuff
+        rm_list = []
+        for entity in self.others.sprites():
+            if entity.is_dead(self):
+                rm_list.append(entity)
+        for entity in rm_list:
+            self.others.remove(entity)
+
 
     """
     Called once per game loop iteration
-    Clears the arena and redraws the bots in updated positions
+    Clears the arena and redraws the entities in updated positions
     """
     def draw(self, screen):
         screen.blit(self.baseImage, self.baseRect)
         self.bots.draw(screen)
+        self.others.draw(screen)

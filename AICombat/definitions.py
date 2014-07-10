@@ -20,10 +20,8 @@ class AttrDict(dict):
 # Legal bot actions
 action = enum('WAIT',
               'MOVE',
-              'TURN')
-
-# Legal terrain types
-terrain = enum('EMPTY')
+              'TURN',
+              'SHOOT')
 
 # Legal cardinal directions
 direction = enum('RIGHT',
@@ -34,7 +32,8 @@ direction = enum('RIGHT',
 # Constants describing how long each bot action takes
 duration = AttrDict({'WAIT': 0,
                      'MOVE': 250,
-                     'TURN': 100
+                     'TURN': 100,
+                     'SHOOT': 100
                     })
 
 # Convenience (row, col) mappings for each cardinal direction

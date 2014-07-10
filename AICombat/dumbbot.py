@@ -22,6 +22,8 @@ class Dumbbot(Virtualbot):
             self.counter = 0
             decision['action'] = action.TURN
             decision['dir'] = direction.RIGHT
+        elif self.counter == self.outer*5-1:
+            decision['action'] = action.SHOOT
         else:
             decision['action'] = action.MOVE
 
