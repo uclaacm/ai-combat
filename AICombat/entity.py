@@ -9,10 +9,15 @@ from realbots to bullets.
 import pygame
 
 # Local imports
-import definitions as D
+import definitions as d
 import resource
 
 class Entity(pygame.sprite.Sprite):
+
+    """
+    All entities have a size. This is defined class-wide
+    """
+    SIZE = (0, 0)
 
     """
     Initialize the entity with an image and position
@@ -20,7 +25,7 @@ class Entity(pygame.sprite.Sprite):
     def __init__(self,
                  imagePath = None,
                  body = pygame.Rect(0,0,0,0),
-                 direction = D.direction.RIGHT):
+                 direction = d.direction.RIGHT):
 
         # Call Sprite initializer
         pygame.sprite.Sprite.__init__(self)

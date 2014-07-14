@@ -8,17 +8,18 @@ A basic bullet shot from a gun that all realbots have
 import pygame
 
 # Local imports
-from definitions import *
-import resource
-from entity import Entity
+import definitions as d
+from fighter import Fighter
 
-class Bullet(Entity):
+class Bullet(Fighter):
+
+    SIZE = (5, 5)
 
     def __init__(self, origin, direction, left, top):
 
         # Call Entity init
-        body = pygame.Rect(left, top, 5, 5)
-        Entity.__init__(self, "bullet.png", body, direction)
+        body = pygame.Rect(left, top, Bullet.SIZE[0], Bullet.SIZE[1])
+        Fighter.__init__(self, "bullet.png", body, direction)
         self.center()
 
         # Other bookkeeping variables
@@ -26,15 +27,20 @@ class Bullet(Entity):
         self.origin = origin
 
     """
-    A bullet is dead if it goes out of screen
-    """
-    def is_dead(self, arena):
-        if not arena.body.colliderect(self.body):
-            return True
-        return False
-
-    """
     Called once per game loop iteration
     """
     def update(self, arena, elapsed):
-        self.move(self.vel*DC[self.direction], self.vel*DR[self.direction])
+
+        # Move
+        self.move(self.vel*d.DC[self.direction], self.vel*d.DR[self.direction])
+
+        # Check for collision with any bots
+        for bot in arena.bots.sprites():
+            if bot is not self.origin and self.body.colliderect(bot.body):
+                bot.hit(15)
+                self.hp = 0
+                return
+    
+        # Check if out of screen
+        if not arena.body.colliderect(self.body):
+            self.hp = 0

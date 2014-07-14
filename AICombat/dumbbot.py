@@ -2,29 +2,29 @@
 An extremely dumb virtual bot used for testing purposes
 """
 
+# Global imports
+import random
+
+# Local imports
+import definitions as d
 from virtualbot import Virtualbot
-from definitions import *
 
 class Dumbbot(Virtualbot):
 
     def __init__(self):
         Virtualbot.__init__(self)
-        self.counter = 0
-        self.outer = 1
         self.imagePath = "dumbbot.png"
 
     def getAction(self, objects, time):
         decision = {}
 
-        self.counter += 1
-        if self.counter == self.outer*5:
-            self.outer += 1
-            self.counter = 0
-            decision['action'] = action.TURN
-            decision['dir'] = direction.RIGHT
-        elif self.counter == self.outer*5-1:
-            decision['action'] = action.SHOOT
+        roll = random.randint(0,99)
+        if roll < 80:
+            decision['action'] = d.action.MOVE
+        elif roll < 95:
+            decision['action'] = d.action.TURN
+            decision['dir'] = d.direction.RIGHT
         else:
-            decision['action'] = action.MOVE
+            decision['action'] = d.action.SHOOT
 
         return decision

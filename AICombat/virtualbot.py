@@ -15,7 +15,7 @@ build upon.
 import pygame
 
 # Local imports
-from definitions import action
+import definitions as d
 
 class Virtualbot():
 
@@ -35,4 +35,4 @@ class Virtualbot():
     The default action is just to wait
     """
     def getAction(self, objects, time):
-        return {'action' : action.WAIT}
+        return {'action' : d.action.WAIT}

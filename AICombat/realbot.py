@@ -12,38 +12,28 @@ steps to execute it properly.
 import pygame
 
 # Local imports
-from definitions import *
-import resource
-from entity import Entity
+import definitions as d
+from fighter import Fighter
 from bullet import Bullet
 
-class Realbot(Entity):
+class Realbot(Fighter):
+
+    SIZE = (20, 20)
 
     def __init__(self, vbot, left=0, top=0):
 
         # Attach virtual bot
         self.vbot = vbot
 
-        # Call Entity init
-        body = pygame.Rect(left, top, 20, 20)
-        Entity.__init__(self, vbot.imagePath, body)
+        # Call Fighter init
+        body = pygame.Rect(left, top, Realbot.SIZE[0], Realbot.SIZE[1])
+        Fighter.__init__(self, vbot.imagePath, body, hp=100)
 
-        # Initialize status
-        self.hp = 100
+        # Initialize states
         self.ammo = 10
-        # Initialize action states
-        self.action = action.WAIT
+        self.action = d.action.WAIT
         self.cooldown = 0
-        ### Direction/turn state
         self.nextDirection = None
-
-    """
-    Called when the realbot is struck by a bullet
-    """
-    def hit(self, dmg):
-        self.hp -= dmg
-        if self.hp <= 0:
-            pass
 
     """
     Called once per game loop iteration
@@ -59,8 +49,8 @@ class Realbot(Entity):
         # If hasn't finished yet (still executing an action)
         if not finished:
             # Smooth turn
-            if self.action == action.TURN:
-                progress = 1 - float(self.cooldown) / duration.TURN
+            if self.action == d.action.TURN:
+                progress = 1 - float(self.cooldown) / d.duration.TURN
                 deltaTheta = (self.nextDirection - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
                 theta = int(self.direction*90 + deltaTheta*progress)
@@ -69,7 +59,7 @@ class Realbot(Entity):
 
         # If it finished cooling down, make any final adjustments
         if finished:
-            if self.action == action.TURN:
+            if self.action == d.action.TURN:
                 self.direction = self.nextDirection
                 theta = self.direction*90
                 self.image = pygame.transform.rotate(self.baseImage, theta)
@@ -79,7 +69,7 @@ class Realbot(Entity):
         if finished:
 
             # Assume wait until proven otherwise
-            self.action = action.WAIT
+            self.action = d.action.WAIT
 
             # Compute what objects are in the bot's sight
             objects = []
@@ -88,24 +78,28 @@ class Realbot(Entity):
             decision = self.vbot.getAction(objects, elapsed)
 
             # If the decision is to move
-            if decision['action'] == action.MOVE:
+            if decision['action'] == d.action.MOVE:
                 
-                nextTop = self.body.top + 4*DR[self.direction]
-                nextLeft = self.body.left + 4*DC[self.direction]
+                nextTop = self.body.top + 4*d.DR[self.direction]
+                nextLeft = self.body.left + 4*d.DC[self.direction]
                 nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
                 if arena.body.contains(nextPosition):
                     self.setPos(nextLeft, nextTop)
 
             # If the decision is to turn (in a valid direction)
-            elif (decision['action'] == action.TURN and
+            elif (decision['action'] == d.action.TURN and
                   'dir' in decision and
-                  decision['dir'] != direction.UP and
-                  decision['dir'] != direction.DOWN):
+                  decision['dir'] != d.direction.UP and
+                  decision['dir'] != d.direction.DOWN):
                 self.nextDirection = (self.direction + 3 + decision['dir']) % 4
-                self.cooldown = duration.TURN
+                self.cooldown = d.duration.TURN
                 self.action = decision['action']
 
-            elif decision['action'] == action.SHOOT:
-                arena.others.add(Bullet(self, self.direction, self.body.left, self.body.top))
-                self.cooldown = duration.SHOOT
+            elif decision['action'] == d.action.SHOOT:
+               
+                # Center bullet on bot's position 
+                bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2
+                bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
+                arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))
+                self.cooldown = d.duration.SHOOT
                 self.action = decision['action']

@@ -24,11 +24,19 @@ class Arena(Entity):
         # Initialize real bots
         # For now, hardcode in two dumbbots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(Dumbbot(), 10, 10))
+        self.bots.add(Realbot(Dumbbot(), 10, 100))
         self.bots.add(Realbot(Dumbbot(), 200, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
+
+    def remove_dead(self, sprite_group):
+        rm_list = []
+        for entity in sprite_group.sprites():
+            if entity.is_dead(self):
+                rm_list.append(entity)
+        for entity in rm_list:
+            sprite_group.remove(entity)
 
     """
     Called once per game loop iteration
@@ -43,12 +51,8 @@ class Arena(Entity):
             entity.update(self, elapsed)
 
         # Remove dead stuff
-        rm_list = []
-        for entity in self.others.sprites():
-            if entity.is_dead(self):
-                rm_list.append(entity)
-        for entity in rm_list:
-            self.others.remove(entity)
+        self.remove_dead(self.others)
+        self.remove_dead(self.bots)
 
 
     """
