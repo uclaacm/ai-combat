@@ -21,7 +21,7 @@ class Battle():
         self.totalElapsed = 0
 
     """
-    Called once per game loop iteration
+    Called once per game tick
     Updates arena
     """
     def update(self, events, elapsed):
@@ -29,8 +29,8 @@ class Battle():
         self.totalElapsed += elapsed
 
     """
-    Called once per game loop iteration
+    Called once per frame
     Draws the arena
     """
     def draw(self, screen):
-        self.arena.draw(screen)
+        return self.arena.draw(screen)

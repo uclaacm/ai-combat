@@ -39,7 +39,7 @@ class Arena(Entity):
             sprite_group.remove(entity)
 
     """
-    Called once per game loop iteration
+    Called once per game tick
     Updates entities on the arena
     """
     def update(self, events, elapsed):
@@ -56,10 +56,14 @@ class Arena(Entity):
 
 
     """
-    Called once per game loop iteration
+    Called once per game frame
     Clears the arena and redraws the entities in updated positions
+    Output: A list of rects that need to be redrawn
     """
     def draw(self, screen):
         screen.blit(self.baseImage, self.baseRect)
         self.bots.draw(screen)
         self.others.draw(screen)
+
+        # For now, just hardcode the entire arena to be redrawn
+        return [self.baseRect]

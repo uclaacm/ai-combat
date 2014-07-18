@@ -30,33 +30,39 @@ class Game():
         # For now, start directly in Battle mode
         # Other modes in the future may include menu, settings, splash, etc.
         self.battle = Battle()
+        self.game_tick = 20
 
     """
     Starts the game by entering into the infinite game loop
     """
     def start(self):
+
+        elapsed = 0
         while 1:
-            # Sleep in such a way that the game does not exceed 40 FPS
+            # Sleep in such a way that the game does not exceed 60 FPS
             # (This value is completely arbitrary)
-            elapsed = self.clock.tick(40)
+            elapsed += self.clock.tick(60)
 
-            # Event processing
-            events = []
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    return
-                events.append(event)
+            while elapsed >= self.game_tick:
+                # Event processing
+                events = []
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return
+                    events.append(event)
 
-            # Update battle state
-            self.battle.update(events, elapsed)
+                # Update battle state
+                self.battle.update(events, self.game_tick)
+                elapsed -= self.game_tick
             
             # Paint stuff (does not actually paint until you call
-            # pygame.display.flip)
-            self.screen.fill((0,0,0))
-            self.battle.draw(self.screen)
+            # pygame.display.update)
+            # The list of rects returned by the draw tells pygame.display
+            # which parts to actually draw
+            rects = self.battle.draw(self.screen)
             
             # Paint the screen
-            pygame.display.flip()
+            pygame.display.update(rects)
 
 
 """
