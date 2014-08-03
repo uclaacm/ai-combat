@@ -21,10 +21,11 @@ class Virtualbot():
 
     """
     The basic constructor for a virtualbot
+        IN:  - dict containing initialization information about the arena and battle
     Only contains an empty imagePath. The virtual bot programmer can decide how
     the bot looks by providing the imagePath.
     """
-    def __init__(self):
+    def __init__(self, arena_data):
         self.imagePath = None
 
     """

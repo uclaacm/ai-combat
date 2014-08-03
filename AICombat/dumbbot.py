@@ -11,8 +11,8 @@ from virtualbot import Virtualbot
 
 class Dumbbot(Virtualbot):
 
-    def __init__(self):
-        Virtualbot.__init__(self)
+    def __init__(self, arena_data):
+        Virtualbot.__init__(self, arena_data)
         self.imagePath = "dumbbot.png"
 
     def getAction(self, objects, time):

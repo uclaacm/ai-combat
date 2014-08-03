@@ -21,11 +21,19 @@ class Arena(Entity):
         body = pygame.Rect(0, 0, 400, 400)
         Entity.__init__(self, "arena.png", body)
 
+        # Initialize basic arena traits
+        self.num_bots = 2
+        self.walls = []
+        arena_data = {"num_bots": self.num_bots,
+                      "walls": self.walls,
+                      "height": self.body.height,
+                      "width": self.body.width}
+
         # Initialize real bots
         # For now, hardcode in two dumbbots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(Dumbbot(), 10, 100))
-        self.bots.add(Realbot(Dumbbot(), 200, 100))
+        self.bots.add(Realbot(Dumbbot(arena_data), 10, 100))
+        self.bots.add(Realbot(Dumbbot(arena_data), 200, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()

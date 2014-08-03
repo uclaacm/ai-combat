@@ -15,6 +15,7 @@ import pygame
 import definitions as d
 from fighter import Fighter
 from bullet import Bullet
+from util import *
 
 class Realbot(Fighter):
 
@@ -73,6 +74,8 @@ class Realbot(Fighter):
 
             # Compute what objects are in the bot's sight
             objects = []
+            for entity in arena.bots.sprites():
+                pass
 
             # Ask virtualbot for what to do next
             decision = self.vbot.getAction(objects, elapsed)
