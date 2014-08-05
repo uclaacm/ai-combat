@@ -39,7 +39,7 @@ class Fighter(Entity):
         return self.hp <= 0
 
     """
-    Called when the fighter is struck 
+    Called when the fighter is struck
     """
     def hit(self, dmg):
         self.hp -= dmg

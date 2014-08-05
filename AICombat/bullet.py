@@ -40,7 +40,7 @@ class Bullet(Fighter):
                 bot.hit(15)
                 self.hp = 0
                 return
-    
+
         # Check if out of screen
         if not arena.body.colliderect(self.body):
             self.hp = 0

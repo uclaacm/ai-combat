@@ -19,7 +19,7 @@ def loadImage(name, colorkey=None):
             colorkey = image.get_at((0,0))
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
-           
+
 def loadSound(name):
     class NoneSound:
         def play(self): pass

@@ -54,13 +54,13 @@ class Game():
                 # Update battle state
                 self.battle.update(events, self.game_tick)
                 elapsed -= self.game_tick
-            
+
             # Paint stuff (does not actually paint until you call
             # pygame.display.update)
             # The list of rects returned by the draw tells pygame.display
             # which parts to actually draw
             rects = self.battle.draw(self.screen)
-            
+
             # Paint the screen
             pygame.display.update(rects)
 

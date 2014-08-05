@@ -82,7 +82,7 @@ class Realbot(Fighter):
 
             # If the decision is to move
             if decision['action'] == d.action.MOVE:
-                
+
                 nextTop = self.body.top + 4*d.DR[self.direction]
                 nextLeft = self.body.left + 4*d.DC[self.direction]
                 nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
@@ -99,8 +99,8 @@ class Realbot(Fighter):
                 self.action = decision['action']
 
             elif decision['action'] == d.action.SHOOT:
-               
-                # Center bullet on bot's position 
+
+                # Center bullet on bot's position
                 bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2
                 bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
                 arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))

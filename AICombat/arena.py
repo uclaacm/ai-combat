@@ -51,7 +51,7 @@ class Arena(Entity):
     Updates entities on the arena
     """
     def update(self, events, elapsed):
-    
+
         # Do updates
         for bot in self.bots.sprites():
             bot.update(self, elapsed)
