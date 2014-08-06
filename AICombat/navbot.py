@@ -4,9 +4,6 @@ navbot.py
 A base virtualbot class that implements many useful navigation functions
 """
 
-# Global imports
-from collections import deque
-
 # Local imports
 import definitions as d
 from virtualbot import Virtualbot
@@ -27,7 +24,7 @@ class Navbot(Virtualbot):
         # Declare navbot internals
         self.navbot_destination = None
         self.navbot_waypoints = []
-        self.command_queue = deque()
+        self.navbot_commands = []
 
         # Save arena layout
         self.arena_body = pygame.Rect(0, 0, arena_data["width"], arena_data["height"])
@@ -48,19 +45,19 @@ class Navbot(Virtualbot):
             return
         x, y = dest
 
+    def delegateAction(self, status):
+        pass
+
     def getAction(self, status):
 
         is_ready = status["bot"]["action"] == d.action.WAIT
 
-        if "navbot_delegate" in dir(self):
-            res = self.navbot_delegate(objects, time)
-            if res:
-                return res
+        res = self.delegateAction(status)
+        if res:
+            return res
 
-        if is_ready and len(self.command_queue) > 0:
-            return self.command_queue.popleft()
+        elif is_ready and len(self.navbot_commands) > 0:
+            return self.navbot_commands.pop()
 
-        decision = {}
-        decision['action'] = d.action.WAIT
-
-        return decision
+        else:
+            return {"action": d.action.WAIT}
