@@ -10,6 +10,7 @@ steps to execute it properly.
 
 # Global imports
 import pygame
+import copy
 
 # Local imports
 import definitions as d
@@ -72,13 +73,11 @@ class Realbot(Fighter):
             # Assume wait until proven otherwise
             self.action = d.action.WAIT
 
-            # Compute what objects are in the bot's sight
-            objects = []
-            for entity in arena.bots.sprites():
-                pass
+            # Compile status information to tell the virtualbot
+            status = self._compile_status(arena, elapsed)
 
             # Ask virtualbot for what to do next
-            decision = self.vbot.getAction(objects, elapsed)
+            decision = self.vbot.getAction(status)
 
             # If the decision is to move
             if decision['action'] == d.action.MOVE:
@@ -106,3 +105,28 @@ class Realbot(Fighter):
                 arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))
                 self.cooldown = d.duration.SHOOT
                 self.action = decision['action']
+
+    def _compile_status(self, arena, elapsed):
+
+        status = {}
+
+        # Environment information
+        status["elapsed"] = elapsed
+
+        # Basic bot information
+        status["bot"] = {}
+        status["bot"]["status"] = self.action
+        status["bot"]["hp"] = self.hp
+        status["bot"]["ammo"] = self.ammo
+        status["bot"]["direction"] = self.direction
+        status["bot"]["body"] = copy.copy(self.body)
+
+        # Objects of interest in sight range
+        status["objects"] = {}
+        status["objects"]["bots"] = []
+        for entity in arena.bots.sprites():
+            pass
+        status["objects"]["projectiles"] = []
+        status["objects"]["items"] = []
+
+        return status
