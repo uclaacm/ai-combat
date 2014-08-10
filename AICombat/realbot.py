@@ -106,26 +106,40 @@ class Realbot(Fighter):
                 self.cooldown = d.duration.SHOOT
                 self.action = decision['action']
 
+    def get_info(self):
+
+        info = {}
+
+        # Type
+        info["entity"] = "bot"
+
+        # Bot information
+        info["bot"] = {}
+        info["bot"]["status"] = self.action
+        info["bot"]["hp"] = self.hp
+        info["bot"]["ammo"] = self.ammo
+        info["bot"]["direction"] = self.direction
+        info["bot"]["body"] = copy.copy(self.body)
+
+        return info
+
     def _compile_status(self, arena, elapsed):
 
-        status = {}
+        # Bot information
+        status = self.get_info()
 
         # Environment information
         status["elapsed"] = elapsed
 
-        # Basic bot information
-        status["bot"] = {}
-        status["bot"]["status"] = self.action
-        status["bot"]["hp"] = self.hp
-        status["bot"]["ammo"] = self.ammo
-        status["bot"]["direction"] = self.direction
-        status["bot"]["body"] = copy.copy(self.body)
-
         # Objects of interest in sight range
         status["objects"] = {}
         status["objects"]["bots"] = []
+        center = get_center(self.body)
+        # Temporary method: circle with radius 100
+        sight = pygame.Rect(center[0], center[1], 100, 100)
         for entity in arena.bots.sprites():
-            pass
+            if entity != self and collide_rect_circle(entity.body, sight):
+                status["objects"]["bots"].append(entity.get_info())
         status["objects"]["projectiles"] = []
         status["objects"]["items"] = []
 

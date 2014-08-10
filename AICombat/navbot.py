@@ -11,7 +11,7 @@ from virtualbot import Virtualbot
 class Navbot(Virtualbot):
 
     class Waypoint():
-        
+
         def __init__(self, x, y):
             self.x = x
             self.y = y

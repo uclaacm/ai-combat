@@ -16,6 +16,7 @@ class Dumbbot(Virtualbot):
         self.imagePath = "dumbbot.png"
 
     def getAction(self, status):
+
         decision = {}
 
         roll = random.randint(0,99)

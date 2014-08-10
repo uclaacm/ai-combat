@@ -6,6 +6,7 @@ A basic bullet shot from a gun that all realbots have
 
 # Global imports
 import pygame
+import copy
 
 # Local imports
 import definitions as d
@@ -44,3 +45,17 @@ class Bullet(Fighter):
         # Check if out of screen
         if not arena.body.colliderect(self.body):
             self.hp = 0
+
+    def get_info(self):
+
+        info = {}
+
+        # Type
+        info["entity"] = "bullet"
+
+        # Bullet information
+        info["bullet"] = {}
+        info["bullet"]["direction"] = self.direction
+        info["bullet"]["body"] = copy.copy(self.body)
+
+        return info

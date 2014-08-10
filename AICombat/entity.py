@@ -60,6 +60,15 @@ class Entity(pygame.sprite.Sprite):
         return False
 
     """
+    Called by other entites to retrieve public information about this
+    entity. Designed to be overridden by subclasses
+    """
+    def get_info(self):
+        info = {}
+        info["type"] = None
+        return info
+
+    """
     Utility function that centers physical and sprite positions
     """
     def center(self):
