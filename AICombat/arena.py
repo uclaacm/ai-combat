@@ -12,6 +12,7 @@ import resource
 from entity import Entity
 from realbot import Realbot
 from dumbbot import Dumbbot
+from navbot import Navbot
 
 class Arena(Entity):
 
@@ -34,6 +35,7 @@ class Arena(Entity):
         self.bots = pygame.sprite.LayeredUpdates()
         self.bots.add(Realbot(Dumbbot(arena_data), 10, 100))
         self.bots.add(Realbot(Dumbbot(arena_data), 200, 100))
+        self.bots.add(Realbot(Navbot(arena_data), 250, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()

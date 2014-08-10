@@ -19,6 +19,8 @@ import definitions as d
 
 class Virtualbot():
 
+    SIZE = (20, 20)
+
     """
     The basic constructor for a virtualbot
         IN:  - dict containing initialization information about the arena and battle
