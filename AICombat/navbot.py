@@ -6,6 +6,7 @@ A base virtualbot class that implements many useful navigation functions
 
 # Global imports
 import pygame
+import math
 
 # Local imports
 import definitions as d
@@ -22,6 +23,7 @@ class Navbot(Virtualbot):
             self.unreachable = False
 
     def __init__(self, arena_data):
+
         Virtualbot.__init__(self, arena_data)
         self.imagePath = "navbot.png"
 
@@ -75,14 +77,18 @@ class Navbot(Virtualbot):
     def setDestination(self, dest):
         if self.navbot_destination == dest:
             return
-        x, y = dest
+        dest_anchors = self._get_anchors(*dest)
+        start_anchors = self._get_anchors(self.body.left, self.body.top)
 
     def delegateAction(self, status):
+        self.setDestination((100, 204))
         pass
 
     def getAction(self, status):
 
-        is_ready = status["bot"]["status"] == d.action.WAIT
+        self._update_status(status)
+
+        is_ready = self.state == d.action.WAIT
 
         res = self.delegateAction(status)
         if res:
@@ -93,3 +99,23 @@ class Navbot(Virtualbot):
 
         else:
             return {"action": d.action.WAIT}
+
+    def _get_anchors(self, x, y):
+        r = y/10.0
+        c = x/10.0
+        fr = int(math.floor(r))
+        cr = int(math.ceil(r))
+        fc = int(math.floor(c))
+        cc = int(math.ceil(c))
+        anchors = set()
+        anchors.add((fr, fc))
+        anchors.add((cr, fc))
+        anchors.add((fr, cc))
+        anchors.add((cr, cc))
+        ret = []
+        for a in anchors:
+            if (a[0] < len(self.navbot_waypoints) and
+               a[1] < len(self.navbot_waypoints[0]) and
+               not self.navbot_waypoints[a[0]][a[1]].unreachable):
+                ret.append(a)
+        return ret

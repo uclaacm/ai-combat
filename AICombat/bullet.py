@@ -6,7 +6,6 @@ A basic bullet shot from a gun that all realbots have
 
 # Global imports
 import pygame
-import copy
 
 # Local imports
 import definitions as d
@@ -56,6 +55,6 @@ class Bullet(Fighter):
         # Bullet information
         info["bullet"] = {}
         info["bullet"]["direction"] = self.direction
-        info["bullet"]["body"] = copy.copy(self.body)
+        info["bullet"]["body"] = self.body
 
         return info

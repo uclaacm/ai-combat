@@ -10,7 +10,6 @@ steps to execute it properly.
 
 # Global imports
 import pygame
-import copy
 
 # Local imports
 import definitions as d
@@ -33,7 +32,7 @@ class Realbot(Fighter):
 
         # Initialize states
         self.ammo = 10
-        self.action = d.action.WAIT
+        self.state = d.action.WAIT
         self.cooldown = 0
         self.nextDirection = None
 
@@ -51,7 +50,7 @@ class Realbot(Fighter):
         # If hasn't finished yet (still executing an action)
         if not finished:
             # Smooth turn
-            if self.action == d.action.TURN:
+            if self.state == d.action.TURN:
                 progress = 1 - float(self.cooldown) / d.duration.TURN
                 deltaTheta = (self.nextDirection - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
@@ -61,7 +60,7 @@ class Realbot(Fighter):
 
         # If it finished cooling down, make any final adjustments
         if finished:
-            if self.action == d.action.TURN:
+            if self.state == d.action.TURN:
                 self.direction = self.nextDirection
                 theta = self.direction*90
                 self.image = pygame.transform.rotate(self.baseImage, theta)
@@ -71,7 +70,7 @@ class Realbot(Fighter):
         if finished:
 
             # Assume wait until proven otherwise
-            self.action = d.action.WAIT
+            self.stae= d.action.WAIT
 
             # Compile status information to tell the virtualbot
             status = self._compile_status(arena, elapsed)
@@ -95,7 +94,7 @@ class Realbot(Fighter):
                   decision['dir'] != d.direction.DOWN):
                 self.nextDirection = (self.direction + 3 + decision['dir']) % 4
                 self.cooldown = d.duration.TURN
-                self.action = decision['action']
+                self.state = decision['action']
 
             elif decision['action'] == d.action.SHOOT:
 
@@ -104,7 +103,7 @@ class Realbot(Fighter):
                 bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
                 arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))
                 self.cooldown = d.duration.SHOOT
-                self.action = decision['action']
+                self.state = decision['action']
 
     def get_info(self):
 
@@ -115,11 +114,11 @@ class Realbot(Fighter):
 
         # Bot information
         info["bot"] = {}
-        info["bot"]["status"] = self.action
+        info["bot"]["state"] = self.state
         info["bot"]["hp"] = self.hp
         info["bot"]["ammo"] = self.ammo
         info["bot"]["direction"] = self.direction
-        info["bot"]["body"] = copy.copy(self.body)
+        info["bot"]["body"] = self.body
 
         return info
 
