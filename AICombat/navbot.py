@@ -6,8 +6,6 @@ A base virtualbot class that implements many useful navigation functions
 
 # Global imports
 import pygame
-import math
-from Queue import Queue
 
 # Local imports
 import definitions as d
@@ -17,13 +15,13 @@ class Navbot(Virtualbot):
 
     class Waypoint():
 
-        def __init__(self, x, y, h, d, p):
+        def __init__(self, x, y, heuristic, distance, prev):
             self.x = x
             self.y = y
-            self.heuristic = h
-            self.distance = d
-            self.priority = h + d
-            self.prev = p
+            self.heuristic = heuristic
+            self.distance = distance
+            self.priority = heuristic + distance
+            self.prev = prev
 
     def __init__(self, arena_data):
 
@@ -73,10 +71,10 @@ class Navbot(Virtualbot):
             return False
 
         # The path finding algorithm
-        # These offsets are used for place intermediate waypoints on the
-        # axes of the destination
-        x_offset = (start[0]-dest[0]) % 10
-        y_offset = (start[1]-dest[1]) % 10
+        # These difference offsets are used to place intermediate waypoints on
+        # the axes of the destination
+        x_diff = (start[0]-dest[0]) % 10
+        y_diff = (start[1]-dest[1]) % 10
         # targets contain candidate waypoints for visiting
         targets = {}
         targets[start] = Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None)
@@ -89,47 +87,29 @@ class Navbot(Virtualbot):
                 if (not wp or w.priority < wp.priority or
                     w.priority == wp.priority and w.heuristic < wp.heuristic):
                     wp = w
-            loc = (wp.x, wp.y)
-            targets.pop(loc)
-            waypoints[loc] = wp
+            cur = (wp.x, wp.y)
+            targets.pop(cur)
+            waypoints[cur] = wp
             # Uncomment line below to see how A* searches
-            # raw_input("{0} {1} {2}".format(loc, wp.priority, wp.heuristic))
-            if loc == dest:
+            # raw_input("{0} {1} {2}".format(cur, wp.priority, wp.heuristic))
+            if cur == dest:
                 break
             for i in xrange(4):
-                # Ugly if conditions to account for intermediate waypoints
-                xmod = 0
-                ymod = 0
-                if i == 0:
-                    if wp.x == dest[0]: xmod = x_offset
-                    elif self._between(dest[0], wp.x, 10): xmod = 10-x_offset
-                    else: xmod = 10
-                elif i == 1:
-                    if wp.y == dest[1]: ymod = y_offset
-                    elif self._between(dest[1], wp.y, 10): ymod = 10-y_offset
-                    else: ymod = 10
-                if i == 2:
-                    if wp.x == dest[0]: xmod = x_offset-10
-                    elif self._between(dest[0], wp.x, 10): xmod = -x_offset
-                    else: xmod = -10
-                elif i == 3:
-                    if wp.y == dest[1]: ymod = y_offset-10
-                    elif self._between(dest[1], wp.y, 10): ymod = -y_offset
-                    else: ymod = -10
-                next_x = wp.x + xmod
-                next_y = wp.y + ymod
-                next_loc = (next_x, next_y)
+                # Determine how to move
+                x_off, y_off = self._compute_offsets(cur, dest, i, x_diff, y_diff)
+                next_x = wp.x + x_off
+                next_y = wp.y + y_off
+                next_cur = (next_x, next_y)
                 # Make sure next location is legal, reachable, and unvisited
                 if (next_x < 0 or next_x >= self.arena_body.width or
                     next_y < 0 or next_y >= self.arena_body.height or
                     not self.navbot_reachable[next_x][next_y] or
-                    next_loc in waypoints):
+                    next_cur in waypoints):
                     continue
-                targets[next_loc] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_loc, dest), wp.distance + abs(xmod) + abs(ymod), loc)
+                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), wp.distance + abs(x_off) + abs(y_off), cur)
 
     def delegateAction(self, status):
         self.setDestination((100, 204))
-        pass
 
     def getAction(self, status):
 
@@ -147,10 +127,37 @@ class Navbot(Virtualbot):
         else:
             return {"action": d.action.WAIT}
 
-
     def _heuristic(self, loc, dest):
         return abs(loc[0]-dest[0]) + abs(loc[1]-dest[1])
 
     def _between(self, loc, base, offset):
         return (loc < base and loc > base+offset or
                 loc > base and loc < base+offset)
+
+    def _compute_offsets(self, cur, dest, direction, x_diff, y_diff):
+        # This ugly if structure accounts for intermediate waypoints on the axes
+        # of the destination. There must be waypoints on the axes or else the
+        # bot cannot reach the destination.
+        x_off = d.DC[direction] * 10
+        y_off = d.DR[direction] * 10
+        if direction == 0:
+            if cur[0] == dest[0]:
+                x_off = x_diff
+            elif self._between(dest[0], cur[0], 10):
+                x_off = 10-x_diff
+        elif direction == 1:
+            if cur[1] == dest[1]:
+                y_off = y_diff
+            elif self._between(dest[1], cur[1], 10):
+                y_off = 10-y_diff
+        elif direction == 2:
+            if cur[0] == dest[0]:
+                x_off = x_diff-10
+            elif self._between(dest[0], cur[0], 10):
+                x_off = -x_diff
+        elif direction == 3:
+            if cur[1] == dest[1]:
+                y_off = y_diff-10
+            elif self._between(dest[1], cur[1], 10):
+                y_off = -y_diff
+        return (x_off, y_off)

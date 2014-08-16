@@ -21,7 +21,7 @@ class Fighter(Entity):
     """
     def __init__(self,
                  imagePath = None,
-                 body = pygame.Rect(0,0,0,0),
+                 body = pygame.Rect(0, 0, 0, 0),
                  direction = d.direction.RIGHT,
                  hp = 1):
 

@@ -64,16 +64,13 @@ class Game():
             # Paint the screen
             pygame.display.update(rects)
 
-
 """
-When AICombat.py is run, it will more or less skip everything until it sees this
+When AICombat.py is run, it will more or less skip everything until it sees the
 if statement at the end. The statement calls main(), which creates a Game
 object to handle the actual application/pygame logic
 
-Order of execution:
-if statement --> main() --> Game.__init__() --> Game.start()
+Order of execution: if statement --> main() --> Game.__init__() --> Game.start()
 """
-
 def main():
     game = Game()
     game.start()

@@ -4,9 +4,6 @@ Battle.py
 Responsible for all battle logic. Maintains the arena object
 """
 
-# Global imports
-import pygame
-
 # Local imports
 from arena import Arena
 

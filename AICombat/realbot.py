@@ -70,7 +70,7 @@ class Realbot(Fighter):
         if finished:
 
             # Assume wait until proven otherwise
-            self.stae= d.action.WAIT
+            self.state = d.action.WAIT
 
             # Compile status information to tell the virtualbot
             status = self._compile_status(arena, elapsed)

@@ -8,7 +8,6 @@ Maintains the list of bots and other objects.
 import pygame
 
 # Local imports
-import resource
 from entity import Entity
 from realbot import Realbot
 from dumbbot import Dumbbot

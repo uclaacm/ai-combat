@@ -19,7 +19,7 @@ class Dumbbot(Virtualbot):
 
         decision = {}
 
-        roll = random.randint(0,99)
+        roll = random.randint(0, 99)
         if roll < 80:
             decision['action'] = d.action.MOVE
         elif roll < 95:

@@ -12,9 +12,6 @@ build upon. It contains some utility functions that most virtualbots will
 probably find reasonably useful.
 """
 
-# Global imports
-import pygame
-
 # Local imports
 import definitions as d
 

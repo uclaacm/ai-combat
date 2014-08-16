@@ -5,7 +5,6 @@ A file with a bunch of utility functions for collisions and geometry
 """
 
 # Global imports
-import pygame
 import math
 
 """
@@ -58,16 +57,16 @@ def collide_rect_circle(rect, circle):
     # Axis-aligned distance check
     dX = abs(c1[0] - c2[0])
     dY = abs(c1[1] - c2[1])
-    if (dX > rect.width/2 + r2):
+    if dX > rect.width/2 + r2:
         return False
-    if (dY > rect.height/2 + r2):
+    if dY > rect.height/2 + r2:
         return False
 
     # Max and min radius distance check
     dist = get_distance(c1, c2)
-    if (dist > get_max_rad(rect) + r2):
+    if dist > get_max_rad(rect) + r2:
         return False
-    if (dist < get_min_rad(rect) + r2):
+    if dist < get_min_rad(rect) + r2:
         return True
 
     # If it gets to this point, besides special configurations, the two objects
