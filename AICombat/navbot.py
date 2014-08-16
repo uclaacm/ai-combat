@@ -7,6 +7,7 @@ A base virtualbot class that implements many useful navigation functions
 # Global imports
 import pygame
 import math
+from Queue import Queue
 
 # Local imports
 import definitions as d
@@ -16,11 +17,13 @@ class Navbot(Virtualbot):
 
     class Waypoint():
 
-        def __init__(self, x, y):
+        def __init__(self, x, y, h, d):
             self.x = x
             self.y = y
+            self.heuristic = h
+            self.distance = d
+            self.priority = h + d
             self.neighbors = []
-            self.unreachable = False
 
     def __init__(self, arena_data):
 
@@ -31,54 +34,35 @@ class Navbot(Virtualbot):
         self.navbot_destination = None
         self.navbot_waypoints = []
         self.navbot_commands = []
+        self.navbot_reachable = []
 
         # Save arena layout
         self.arena_body = pygame.Rect(0, 0, arena_data["width"], arena_data["height"])
         self.arena_walls = arena_data["walls"]
 
-        # Construct an extremely simple waypoint graph out of the arena. The
-        # idea is to place a "waypoint" every 10 pixels. Ideally this will
-        # split the the arena into 10x10 square chunks, and when computing a
-        # path, the search algorithm will consider traversing only these
-        # waypoints.
-        ### Initialize waypoints
-        for x in xrange(0, self.arena_body.width-Virtualbot.SIZE[0], 10):
-            self.navbot_waypoints.append([])
-            for y in xrange(0, self.arena_body.height-Virtualbot.SIZE[1], 10):
-                self.navbot_waypoints[-1].append(Navbot.Waypoint(x, y))
-        rows = len(self.navbot_waypoints)
-        cols = len(self.navbot_waypoints[0])
-        ### Detect unreachable waypoints (due to walls)
-        for r in xrange(rows):
-            for c in xrange(cols):
-                wp = self.navbot_waypoints[r][c]
-                wp_rect = pygame.Rect(wp.x, wp.y, Virtualbot.SIZE[0], Virtualbot.SIZE[1])
-                for w in self.arena_walls:
-                    if wp_rect.colliderect(w):
-                        wp.unreachable = True
-                        break
-        ### Construct grid graph
-        for r in xrange(rows):
-            for c in xrange(cols):
-                wp = self.navbot_waypoints[r][c]
-                if wp.unreachable:
-                    continue
-                for i in xrange(4):
-                    next_r = r+d.DR[i]
-                    next_c = c+d.DC[i]
-                    if (next_r < 0 or next_r >= rows or
-                        next_c < 0 or next_c >= cols):
-                       continue
-                    next_wp = self.navbot_waypoints[next_r][next_c]
-                    if next_wp.unreachable:
-                        continue
-                    wp.neighbors.append(next_wp)
+        # Compute all reachable and unreachable pixels
+        # Won't use _too_ much memory as long as the map isn't too big....
+        # Allows O(1) path collision detection instead of O(len(walls))
+        # Also allows easier construction of waypoint grid during path finding
+        for x in xrange(self.arena_body.width):
+            self.navbot_reachable.append([True] * self.arena_body.height)
+        for w in self.arena_walls:
+            leftbound = max(0, w.left - Virtualbot.SIZE[0])
+            rightbound = w.left + w.width
+            for x in xrange(leftbound, rightbound):
+                topbound = max(0, w.top - Virtualbot.SIZE[1])
+                botbound = w.top + w.height
+                for y in xrange(topbound, botbound):
+                    self.navbot_reachable[x][y] = False
+
 
     def setDestination(self, dest):
+        start = (self.body.left, self.body.top)
         if self.navbot_destination == dest:
-            return
-        dest_anchors = self._get_anchors(*dest)
-        start_anchors = self._get_anchors(self.body.left, self.body.top)
+            return True
+        if not self.navbot_reachable[dest[0]][dest[1]]:
+            return False
+        waypoints = self._construct_waypoints(start, dest)
 
     def delegateAction(self, status):
         self.setDestination((100, 204))
@@ -100,22 +84,35 @@ class Navbot(Virtualbot):
         else:
             return {"action": d.action.WAIT}
 
-    def _get_anchors(self, x, y):
-        r = y/10.0
-        c = x/10.0
-        fr = int(math.floor(r))
-        cr = int(math.ceil(r))
-        fc = int(math.floor(c))
-        cc = int(math.ceil(c))
-        anchors = set()
-        anchors.add((fr, fc))
-        anchors.add((cr, fc))
-        anchors.add((fr, cc))
-        anchors.add((cr, cc))
-        ret = []
-        for a in anchors:
-            if (a[0] < len(self.navbot_waypoints) and
-               a[1] < len(self.navbot_waypoints[0]) and
-               not self.navbot_waypoints[a[0]][a[1]].unreachable):
-                ret.append(a)
-        return ret
+    """
+    Construct an extremely simple waypoint graph out of the arena. The idea is
+    to place a "waypoint" every roughly 10 pixels, starting from the bot's
+    current position. Ideally this will split the the arena into 10x10 square
+    chunks, and when computing a path, the search algorithm will consider
+    traversing only these waypoints.
+    """
+    def _construct_waypoints(self, start, dest):
+        # Initialize base waypoint map by floodfilling from start
+        waypoints = {}
+        """
+        q = Queue()
+        q.put(start)
+        while not q.empty():
+            x, y = q.get()
+            if (x, y) in waypoints:
+                continue
+            waypoints[(x, y)] = Navbot.Waypoint(x, y, -1, -1)
+            neighbors = []
+            waypoints[(x, y)].neighbors = neighbors
+            for i in xrange(4):
+                next_x = x + d.DC[i]*10
+                next_y = y + d.DR[i]*10
+                if (next_x < 0 or next_x >= self.arena_body.width or
+                    next_y < 0 or next_y >= self.arena_body.height):
+                   continue
+                neighbors.append((next_x, next_y))
+                q.put((next_x, next_y))
+        """
+
+        # Extend two axes from dest to connect to waypoint map
+        return waypoints
