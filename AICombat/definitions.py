@@ -19,6 +19,7 @@ class AttrDict(dict):
 
 # Legal bot actions
 action = enum('WAIT',
+              'CONTINUE',
               'WALK',
               'TURN',
               'SHOOT')
@@ -31,9 +32,10 @@ direction = enum('RIGHT',
 
 # Constants describing how long each bot action takes
 duration = AttrDict({'WAIT': 0,
-                     'WALK': 5,   # 5 ms per pixel
-                     'TURN': 100, # 100 ms per 90 degrees
-                     'SHOOT': 100 # 100 ms per shot
+                     'CONTINUE': 0,
+                     'WALK': 5,     # 5 ms per pixel
+                     'TURN': 100,   # 100 ms per 90 degrees
+                     'SHOOT': 100   # 100 ms per shot
                     })
 
 # Convenience (row, col) mappings for each cardinal direction

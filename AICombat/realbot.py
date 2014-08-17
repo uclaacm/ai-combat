@@ -57,8 +57,16 @@ class Realbot(Fighter):
 
     def _process_decision(self, arena, decision):
 
-        # If walk
-        if decision['action'] == d.action.WALK:
+        # If continue, simply do nothing
+        if decision['action'] == d.action.CONTINUE:
+            return
+
+        # If wait, toggle action state
+        elif decision['action'] == d.action.WAIT:
+            self.state["action"] = d.action.WAIT
+
+        # If walk, toggle action state and retrieve distance
+        elif decision['action'] == d.action.WALK:
             # Check if parameters are valid
             if ("distance" not in decision or
                 decision["distance"] <= 0):
@@ -66,7 +74,7 @@ class Realbot(Fighter):
             self.state["action"] = d.action.WALK
             self.state["distance"] = decision["distance"]
 
-        # If turn
+        # If turn, toggle action state and compute next direction
         elif decision['action'] == d.action.TURN:
             # Check if parameters are valid
             if ("dir" not in decision or
@@ -77,7 +85,7 @@ class Realbot(Fighter):
             self.state["next"] = (self.direction + 3 + decision["dir"]) % 4
             self.state["cooldown"] = d.duration.TURN
 
-        # If shoot
+        # If shoot, toggle action state and materialize the bullet
         elif decision['action'] == d.action.SHOOT:
             # Center bullet on bot's position
             bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2

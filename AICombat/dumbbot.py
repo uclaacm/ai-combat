@@ -20,7 +20,9 @@ class Dumbbot(Virtualbot):
         decision = {}
 
         roll = random.randint(0, 99)
-        if roll < 80:
+        if roll < 30:
+            decision['action'] = d.action.CONTINUE
+        elif roll < 80:
             decision['action'] = d.action.WALK
             decision['distance'] = random.randint(1,10)
         elif roll < 95:
