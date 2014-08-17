@@ -32,9 +32,7 @@ class Realbot(Fighter):
 
         # Initialize states
         self.ammo = 10
-        self.state = d.action.WAIT
-        self.cooldown = 0
-        self.nextDirection = None
+        self.state = {"action": d.action.WAIT}
 
     """
     Called once per game loop iteration
@@ -43,67 +41,116 @@ class Realbot(Fighter):
     """
     def update(self, arena, elapsed):
 
-        # Update cooldown and check if it dropped below 0
-        finished = self.cooldown - elapsed <= 0
-        self.cooldown = max(0, self.cooldown - elapsed)
+        # Update state and return if not ready for next decision
+        if not self._update_state(arena, elapsed):
+            return
 
-        # If hasn't finished yet (still executing an action)
-        if not finished:
-            # Smooth turn
-            if self.state == d.action.TURN:
-                progress = 1 - float(self.cooldown) / d.duration.TURN
-                deltaTheta = (self.nextDirection - self.direction)*90
+        # Compile status information to tell the virtualbot
+        status = self._compile_status(arena, elapsed)
+
+        # Ask virtualbot for what to do next
+        decision = self.vbot.getAction(status)
+
+        # Process decision
+        self._process_decision(arena, decision)
+
+
+    def _process_decision(self, arena, decision):
+
+        # If walk
+        if decision['action'] == d.action.WALK:
+            # Check if parameters are valid
+            if ("distance" not in decision or
+                decision["distance"] <= 0):
+                return
+            self.state["action"] = d.action.WALK
+            self.state["distance"] = decision["distance"]
+
+        # If turn
+        elif decision['action'] == d.action.TURN:
+            # Check if parameters are valid
+            if ("dir" not in decision or
+                decision["dir"] != d.direction.LEFT and
+                decision["dir"] != d.direction.RIGHT):
+                return
+            self.state["action"] = d.action.TURN
+            self.state["next"] = (self.direction + 3 + decision["dir"]) % 4
+            self.state["cooldown"] = d.duration.TURN
+
+        # If shoot
+        elif decision['action'] == d.action.SHOOT:
+            # Center bullet on bot's position
+            bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2
+            bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
+            arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))
+            self.state["action"] = d.action.SHOOT
+            self.state["cooldown"] = d.duration.SHOOT
+
+
+    def _update_state(self, arena, elapsed):
+
+        action = self.state["action"]
+
+        # If waiting
+        if action == d.action.WAIT:
+            return True
+
+        # If turning
+        if action == d.action.TURN:
+            cooldown = self.state["cooldown"]
+            cooldown = max(0, self.state["cooldown"] - elapsed)
+            # Still turning
+            if cooldown > 0:
+                progress = 1 - float(cooldown) / d.duration.TURN
+                deltaTheta = (self.state["next"] - self.direction)*90
                 deltaTheta = deltaTheta if deltaTheta != 270 else -90
                 theta = int(self.direction*90 + deltaTheta*progress)
                 self.image = pygame.transform.rotate(self.baseImage, theta)
                 self.center()
-
-        # If it finished cooling down, make any final adjustments
-        if finished:
-            if self.state == d.action.TURN:
-                self.direction = self.nextDirection
+                self.state["cooldown"] = cooldown
+                return False
+            # Done turning
+            else:
+                self.direction = self.state["next"]
                 theta = self.direction*90
                 self.image = pygame.transform.rotate(self.baseImage, theta)
                 self.center()
+                self.state = {"action": d.action.WAIT}
 
-        # If it finished cooling down, ask for the next action
-        if finished:
+        # If shooting
+        elif action == d.action.SHOOT:
+            cooldown = self.state["cooldown"]
+            cooldown = max(0, self.state["cooldown"] - elapsed)
+            # Still recoiling
+            if cooldown > 0:
+                self.state["cooldown"] = cooldown
+                return False
+            # Done recoiling
+            else:
+                self.state = {"action": d.action.WAIT}
 
-            # Assume wait until proven otherwise
-            self.state = d.action.WAIT
+        # If walking
+        # TODO: Implement wall collision detection
+        elif action == d.action.WALK:
+            max_move = 20 / d.duration.WALK
+            distance = self.state["distance"]
+            amt = min(max_move, distance)
+            nextTop = self.body.top + amt*d.DR[self.direction]
+            nextLeft = self.body.left + amt*d.DC[self.direction]
+            nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
+            # Can't walk out of arena
+            if not arena.body.contains(nextPosition):
+                self.state = {"action": d.action.WAIT}
+                return True
+            self.setPos(nextLeft, nextTop)
+            distance -= amt
+            # Still walking
+            if distance:
+                self.state["distance"] = distance
+            else:
+                self.state = {"action": d.action.WAIT}
 
-            # Compile status information to tell the virtualbot
-            status = self._compile_status(arena, elapsed)
-
-            # Ask virtualbot for what to do next
-            decision = self.vbot.getAction(status)
-
-            # If the decision is to move
-            if decision['action'] == d.action.MOVE:
-
-                nextTop = self.body.top + 4*d.DR[self.direction]
-                nextLeft = self.body.left + 4*d.DC[self.direction]
-                nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
-                if arena.body.contains(nextPosition):
-                    self.setPos(nextLeft, nextTop)
-
-            # If the decision is to turn (in a valid direction)
-            elif (decision['action'] == d.action.TURN and
-                  'dir' in decision and
-                  decision['dir'] != d.direction.UP and
-                  decision['dir'] != d.direction.DOWN):
-                self.nextDirection = (self.direction + 3 + decision['dir']) % 4
-                self.cooldown = d.duration.TURN
-                self.state = decision['action']
-
-            elif decision['action'] == d.action.SHOOT:
-
-                # Center bullet on bot's position
-                bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2
-                bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
-                arena.others.add(Bullet(self, self.direction, bullet_left, bullet_top))
-                self.cooldown = d.duration.SHOOT
-                self.state = decision['action']
+        return True
 
     def get_info(self):
 
