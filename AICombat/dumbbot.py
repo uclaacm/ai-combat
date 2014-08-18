@@ -27,7 +27,7 @@ class Dumbbot(Virtualbot):
             decision['distance'] = random.randint(1,10)
         elif roll < 95:
             decision['action'] = d.action.TURN
-            decision['dir'] = d.direction.RIGHT
+            decision['direction'] = d.direction.RIGHT
         else:
             decision['action'] = d.action.SHOOT
 

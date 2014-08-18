@@ -77,12 +77,12 @@ class Realbot(Fighter):
         # If turn, toggle action state and compute next direction
         elif decision['action'] == d.action.TURN:
             # Check if parameters are valid
-            if ("dir" not in decision or
-                decision["dir"] != d.direction.LEFT and
-                decision["dir"] != d.direction.RIGHT):
+            if ("direction" not in decision or
+                decision["direction"] != d.direction.LEFT and
+                decision["direction"] != d.direction.RIGHT):
                 return
             self.state["action"] = d.action.TURN
-            self.state["next"] = (self.direction + 3 + decision["dir"]) % 4
+            self.state["next"] = (self.direction + 3 + decision["direction"]) % 4
             self.state["cooldown"] = d.duration.TURN
 
         # If shoot, toggle action state and materialize the bullet
