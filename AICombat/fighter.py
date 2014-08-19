@@ -20,13 +20,13 @@ class Fighter(Entity):
     Initialize the fighter with an image, position, and hp
     """
     def __init__(self,
-                 imagePath = None,
+                 image_path = None,
                  body = pygame.Rect(0, 0, 0, 0),
                  direction = d.direction.RIGHT,
                  hp = 1):
 
         # Call Entity initializer
-        Entity.__init__(self, imagePath, body, direction)
+        Entity.__init__(self, image_path, body, direction)
 
         # Initialize fighter attributes
         self.hp = hp

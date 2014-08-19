@@ -15,7 +15,7 @@ class Battle():
         self.arena = Arena()
 
         # Initialize other bookkeeping variables
-        self.totalElapsed = 0
+        self.total_elapsed = 0
 
     """
     Called once per game tick
@@ -23,7 +23,7 @@ class Battle():
     """
     def update(self, events, elapsed):
         self.arena.update(events, elapsed)
-        self.totalElapsed += elapsed
+        self.total_elapsed += elapsed
 
     """
     Called once per frame

@@ -23,7 +23,7 @@ class Entity(pygame.sprite.Sprite):
     Initialize the entity with an image and position
     """
     def __init__(self,
-                 imagePath = None,
+                 image_path = None,
                  body = pygame.Rect(0, 0, 0, 0),
                  direction = d.direction.RIGHT):
 
@@ -31,9 +31,9 @@ class Entity(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
         # Attach image, if given
-        if imagePath:
-            self.baseImage, self.baseRect = resource.loadImage(imagePath)
-            self.image = self.baseImage
+        if image_path:
+            self.base_image, self.base_rect = resource.load_image(image_path)
+            self.image = self.base_image
             self.rect = self.image.get_rect()
 
         # Set physical position, size, and direction
@@ -73,10 +73,10 @@ class Entity(pygame.sprite.Sprite):
     """
     def center(self):
         self.rect = self.image.get_rect()
-        offsetLeft = self.body.width/2 - self.rect.width/2
-        offsetTop = self.body.height/2 - self.rect.height/2
-        self.rect.left = self.body.left + offsetLeft
-        self.rect.top = self.body.top + offsetTop
+        offset_left = self.body.width/2 - self.rect.width/2
+        offset_top = self.body.height/2 - self.rect.height/2
+        self.rect.left = self.body.left + offset_left
+        self.rect.top = self.body.top + offset_top
 
     """
     Utility function to translate position
@@ -90,7 +90,7 @@ class Entity(pygame.sprite.Sprite):
     """
     Utility function to change position
     """
-    def setPos(self, left, top):
+    def set_pos(self, left, top):
         self.body.left = left
         self.body.top = top
         self.center()

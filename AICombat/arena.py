@@ -70,9 +70,9 @@ class Arena(Entity):
     Output: A list of rects that need to be redrawn
     """
     def draw(self, screen):
-        screen.blit(self.baseImage, self.baseRect)
+        screen.blit(self.base_image, self.base_rect)
         self.bots.draw(screen)
         self.others.draw(screen)
 
         # For now, just hardcode the entire arena to be redrawn
-        return [self.baseRect]
+        return [self.base_rect]

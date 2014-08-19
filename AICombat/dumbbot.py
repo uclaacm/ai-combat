@@ -13,9 +13,9 @@ class Dumbbot(Virtualbot):
 
     def __init__(self, arena_data):
         Virtualbot.__init__(self, arena_data)
-        self.imagePath = "dumbbot.png"
+        self.image_path = "dumbbot.png"
 
-    def getAction(self, status):
+    def get_action(self, status):
 
         decision = {}
 

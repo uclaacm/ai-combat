@@ -23,10 +23,10 @@ class Virtualbot():
     The basic constructor for a virtualbot
         IN:  - dict containing initialization information about the arena
     The virtual bot programmer can decide how the bot looks by providing the
-    imagePath.
+    image_path.
     """
     def __init__(self, arena_data):
-        self.imagePath = None
+        self.image_path = None
         self.state = None
         self.body = None
         self.hp = None
@@ -39,7 +39,7 @@ class Virtualbot():
         OUT: - a dict specifying the action to take and its parameters
     The default action is just to wait
     """
-    def getAction(self, status):
+    def get_action(self, status):
         return {'action' : d.action.WAIT}
 
     """

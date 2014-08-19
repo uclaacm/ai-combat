@@ -28,7 +28,7 @@ class Realbot(Fighter):
 
         # Call Fighter init
         body = pygame.Rect(left, top, Realbot.SIZE[0], Realbot.SIZE[1])
-        Fighter.__init__(self, vbot.imagePath, body, hp=100)
+        Fighter.__init__(self, vbot.image_path, body, hp=100)
 
         # Initialize states
         self.ammo = 10
@@ -49,7 +49,7 @@ class Realbot(Fighter):
         status = self._compile_status(arena, elapsed)
 
         # Ask virtualbot for what to do next
-        decision = self.vbot.getAction(status)
+        decision = self.vbot.get_action(status)
 
         # Process decision
         self._process_decision(arena, decision)
@@ -110,10 +110,10 @@ class Realbot(Fighter):
             # Still turning
             if cooldown > 0:
                 progress = 1 - float(cooldown) / d.duration.TURN
-                deltaTheta = (self.state["next"] - self.direction)*90
-                deltaTheta = deltaTheta if deltaTheta != 270 else -90
-                theta = int(self.direction*90 + deltaTheta*progress)
-                self.image = pygame.transform.rotate(self.baseImage, theta)
+                dTheta = (self.state["next"] - self.direction)*90
+                dTheta = dTheta if dTheta != 270 else -90
+                theta = int(self.direction*90 + dTheta*progress)
+                self.image = pygame.transform.rotate(self.base_image, theta)
                 self.center()
                 self.state["cooldown"] = cooldown
                 return False
@@ -121,7 +121,7 @@ class Realbot(Fighter):
             else:
                 self.direction = self.state["next"]
                 theta = self.direction*90
-                self.image = pygame.transform.rotate(self.baseImage, theta)
+                self.image = pygame.transform.rotate(self.base_image, theta)
                 self.center()
                 self.state = {"action": d.action.WAIT}
 
@@ -143,14 +143,14 @@ class Realbot(Fighter):
             max_move = 20 / d.duration.WALK
             distance = self.state["distance"]
             amt = min(max_move, distance)
-            nextTop = self.body.top + amt*d.DR[self.direction]
-            nextLeft = self.body.left + amt*d.DC[self.direction]
-            nextPosition = pygame.Rect(nextLeft, nextTop, 20, 20)
+            next_top = self.body.top + amt*d.DR[self.direction]
+            next_left = self.body.left + amt*d.DC[self.direction]
+            next_pos = pygame.Rect(next_left, next_top, 20, 20)
             # Can't walk out of arena
-            if not arena.body.contains(nextPosition):
+            if not arena.body.contains(next_pos):
                 self.state = {"action": d.action.WAIT}
                 return True
-            self.setPos(nextLeft, nextTop)
+            self.set_pos(next_left, next_top)
             distance -= amt
             # Still walking
             if distance:

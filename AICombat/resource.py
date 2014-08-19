@@ -7,7 +7,7 @@ Contains utility resource loading functions
 
 import pygame
 
-def loadImage(name, colorkey=None):
+def load_image(name, colorkey=None):
     try:
         image = pygame.image.load(name)
     except pygame.error as message:
@@ -19,7 +19,7 @@ def loadImage(name, colorkey=None):
         image.set_colorkey(colorkey, RLEACCEL)
     return image, image.get_rect()
 
-def loadSound(name):
+def load_sound(name):
     class NoneSound:
         def play(self):
             pass

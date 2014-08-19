@@ -27,7 +27,7 @@ class Navbot(Virtualbot):
     def __init__(self, arena_data):
 
         Virtualbot.__init__(self, arena_data)
-        self.imagePath = "navbot.png"
+        self.image_path = "navbot.png"
 
         # Declare navbot internals
         self.navbot_destination = None
@@ -54,7 +54,7 @@ class Navbot(Virtualbot):
                 for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
 
-    def setDestination(self, dest):
+    def set_destination(self, dest):
         start = self.get_location()
 
         # Perform basic feasibility checks
@@ -77,7 +77,7 @@ class Navbot(Virtualbot):
 
         return True
 
-    def delegateAction(self, status):
+    def delegate_action(self, status):
         # Temporary demo of navigation
         checkpoints = [(250, 100),
                        (0, 0),
@@ -87,15 +87,15 @@ class Navbot(Virtualbot):
         if not self.navbot_destination:
             for i in xrange(len(checkpoints)-1):
                 if self.get_location() == checkpoints[i]:
-                    self.setDestination(checkpoints[i+1])
+                    self.set_destination(checkpoints[i+1])
 
-    def getAction(self, status):
+    def get_action(self, status):
 
         self._update_status(status)
 
         is_ready = self.state['action'] == d.action.WAIT
 
-        res = self.delegateAction(status)
+        res = self.delegate_action(status)
         if res:
             return res
 
