@@ -111,7 +111,7 @@ class Realbot(Fighter):
             if cooldown > 0:
                 progress = 1 - float(cooldown) / d.duration.TURN
                 dTheta = (self.state["next"] - self.direction)*90
-                dTheta = dTheta if dTheta != 270 else -90
+                dTheta = dTheta if abs(dTheta) != 270 else -dTheta/3
                 theta = int(self.direction*90 + dTheta*progress)
                 self.image = pygame.transform.rotate(self.base_image, theta)
                 self.center()

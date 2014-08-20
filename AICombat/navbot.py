@@ -7,6 +7,7 @@ A base virtualbot class that implements many useful navigation functions
 # Global imports
 import pygame
 import copy
+import sys
 
 # Local imports
 import definitions as d
@@ -16,13 +17,14 @@ class Navbot(Virtualbot):
 
     class Waypoint():
 
-        def __init__(self, x, y, heuristic, distance, prev):
+        def __init__(self, x, y, heuristic, distance, prev, direction):
             self.x = x
             self.y = y
             self.heuristic = heuristic
             self.distance = distance
-            self.priority = heuristic + distance
+            self.priority = self.heuristic + self.distance
             self.prev = prev
+            self.direction = direction
 
     def __init__(self, arena_data):
 
@@ -176,7 +178,7 @@ class Navbot(Virtualbot):
 
         # targets contain candidate waypoints for visiting
         targets = {}
-        targets[start] = Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None)
+        targets[start] = Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None, self.direction)
 
         # waypoints save information about each visited waypoint
         waypoints = {}
@@ -210,7 +212,17 @@ class Navbot(Virtualbot):
                     not self.navbot_reachable[next_x][next_y] or
                     next_cur in waypoints):
                     continue
-                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), wp.distance + abs(x_off) + abs(y_off), cur)
+
+                cost = wp.distance
+                cost += (abs(x_off) + abs(y_off)) * d.duration.WALK
+                move_dir = self._get_direction(cur, next_cur)
+                diff_dir = (wp.direction - move_dir) % 4
+                if diff_dir == 1 or diff_dir == 3:
+                    cost += d.duration.TURN
+                elif diff_dir == 2:
+                    cost += d.duration.TURN * 2
+
+                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, move_dir)
 
         # If path is not found
         if dest not in waypoints:
@@ -228,7 +240,7 @@ class Navbot(Virtualbot):
 
 
     def _heuristic(self, loc, dest):
-        return abs(loc[0]-dest[0]) + abs(loc[1]-dest[1])
+        return (abs(loc[0]-dest[0]) + abs(loc[1]-dest[1])) * d.duration.WALK
 
     def _between(self, loc, base, offset):
         return (loc < base and loc > base+offset or
