@@ -173,8 +173,8 @@ class Navbot(Virtualbot):
 
         # These difference offsets are used to place intermediate waypoints on
         # the axes of the destination
-        x_diff = (start[0]-dest[0]) % 10
-        y_diff = (start[1]-dest[1]) % 10
+        x_diff = (dest[0]-start[0]) % 10
+        y_diff = (dest[1]-start[1]) % 10
 
         # targets contain candidate waypoints for visiting
         targets = {}
@@ -215,14 +215,13 @@ class Navbot(Virtualbot):
 
                 cost = wp.distance
                 cost += (abs(x_off) + abs(y_off)) * d.duration.WALK
-                move_dir = self._get_direction(cur, next_cur)
-                diff_dir = (wp.direction - move_dir) % 4
+                diff_dir = (wp.direction - i) % 4
                 if diff_dir == 1 or diff_dir == 3:
                     cost += d.duration.TURN
                 elif diff_dir == 2:
                     cost += d.duration.TURN * 2
 
-                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, move_dir)
+                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, i)
 
         # If path is not found
         if dest not in waypoints:
@@ -254,22 +253,22 @@ class Navbot(Virtualbot):
         y_off = d.DR[direction] * 10
         if direction == 0:
             if cur[0] == dest[0]:
-                x_off = x_diff
-            elif self._between(dest[0], cur[0], 10):
                 x_off = 10-x_diff
+            elif self._between(dest[0], cur[0], 10):
+                x_off = x_diff
         elif direction == 1:
             if cur[1] == dest[1]:
-                y_off = y_diff
+                y_off = -y_diff
             elif self._between(dest[1], cur[1], 10):
-                y_off = 10-y_diff
+                y_off = y_diff-10
         elif direction == 2:
             if cur[0] == dest[0]:
-                x_off = x_diff-10
-            elif self._between(dest[0], cur[0], 10):
                 x_off = -x_diff
+            elif self._between(dest[0], cur[0], 10):
+                x_off = x_diff-10
         elif direction == 3:
             if cur[1] == dest[1]:
-                y_off = y_diff-10
+                y_off = 10-y_diff
             elif self._between(dest[1], cur[1], 10):
-                y_off = -y_diff
+                y_off = y_diff
         return (x_off, y_off)
