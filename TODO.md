@@ -1,0 +1,6 @@
+- Document navbot
+- Implement wall collision detection for realbot
+    - Test navbot path finding performance against walls
+- Write stalkerbot
+    - Uses navbot to stalk enemy bots and shoots if in range
+- Write dirty paint mechanism

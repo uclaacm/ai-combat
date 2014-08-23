@@ -138,7 +138,6 @@ class Realbot(Fighter):
                 self.state = {"action": d.action.WAIT}
 
         # If walking
-        # TODO: Implement wall collision detection
         elif action == d.action.WALK:
             max_move = 20 / d.duration.WALK
             distance = self.state["distance"]
