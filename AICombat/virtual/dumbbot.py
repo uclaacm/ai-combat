@@ -6,14 +6,14 @@ An extremely dumb virtual bot used for testing purposes
 import random
 
 # Local imports
-import definitions as d
-from virtualbot import Virtualbot
+import real.definitions as d
+from virtual.virtualbot import Virtualbot
 
 class Dumbbot(Virtualbot):
 
     def __init__(self, arena_data):
         Virtualbot.__init__(self, arena_data)
-        self.image_path = "dumbbot.png"
+        self.image_path = "img/dumbbot.png"
 
     def get_action(self, status):
 

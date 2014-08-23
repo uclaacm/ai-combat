@@ -12,10 +12,10 @@ steps to execute it properly.
 import pygame
 
 # Local imports
-import definitions as d
-from fighter import Fighter
-from bullet import Bullet
-from util import *
+import real.definitions as d
+from real.fighter import Fighter
+from real.bullet import Bullet
+from utils.geometry import *
 
 class Realbot(Fighter):
 

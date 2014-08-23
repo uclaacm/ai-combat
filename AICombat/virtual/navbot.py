@@ -10,8 +10,8 @@ import copy
 import sys
 
 # Local imports
-import definitions as d
-from virtualbot import Virtualbot
+import real.definitions as d
+from virtual.virtualbot import Virtualbot
 
 class Navbot(Virtualbot):
 
@@ -29,7 +29,7 @@ class Navbot(Virtualbot):
     def __init__(self, arena_data):
 
         Virtualbot.__init__(self, arena_data)
-        self.image_path = "navbot.png"
+        self.image_path = "img/navbot.png"
 
         # Declare navbot internals
         self.navbot_destination = None
@@ -272,3 +272,4 @@ class Navbot(Virtualbot):
             elif self._between(dest[1], cur[1], 10):
                 y_off = y_diff
         return (x_off, y_off)
+

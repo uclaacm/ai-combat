@@ -8,8 +8,8 @@ A basic bullet shot from a gun that all realbots have
 import pygame
 
 # Local imports
-import definitions as d
-from fighter import Fighter
+import real.definitions as d
+from real.fighter import Fighter
 
 class Bullet(Fighter):
 
@@ -19,7 +19,7 @@ class Bullet(Fighter):
 
         # Call Entity init
         body = pygame.Rect(left, top, Bullet.SIZE[0], Bullet.SIZE[1])
-        Fighter.__init__(self, "bullet.png", body, direction)
+        Fighter.__init__(self, "img/bullet.png", body, direction)
         self.center()
 
         # Other bookkeeping variables

@@ -11,7 +11,10 @@ AICombat.py is the application class, which handles the pygame window, game
 clock, and main game loop.
 """
 
+# Global imports
 import pygame
+
+# Local imports
 from battle import Battle
 
 class Game():

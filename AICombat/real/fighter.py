@@ -11,8 +11,8 @@ This includes bots, bullets, and possibly other entities in the future
 import pygame
 
 # Local imports
-import definitions as d
-from entity import Entity
+import real.definitions as d
+from real.entity import Entity
 
 class Fighter(Entity):
 

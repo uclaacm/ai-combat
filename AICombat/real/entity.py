@@ -9,8 +9,8 @@ from realbots to bullets.
 import pygame
 
 # Local imports
-import definitions as d
-import resource
+import real.definitions as d
+from utils.resource import load_image
 
 class Entity(pygame.sprite.Sprite):
 
@@ -32,7 +32,7 @@ class Entity(pygame.sprite.Sprite):
 
         # Attach image, if given
         if image_path:
-            self.base_image, self.base_rect = resource.load_image(image_path)
+            self.base_image, self.base_rect = load_image(image_path)
             self.image = self.base_image
             self.rect = self.image.get_rect()
 

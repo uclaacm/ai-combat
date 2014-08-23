@@ -8,10 +8,9 @@ Maintains the list of bots and other objects.
 import pygame
 
 # Local imports
-from entity import Entity
-from realbot import Realbot
-from dumbbot import Dumbbot
-from navbot import Navbot
+from real.realbot import Realbot
+from real.entity import Entity
+from virtual import *
 
 class Arena(Entity):
 
@@ -19,7 +18,7 @@ class Arena(Entity):
 
         # Initialize arena as an entity
         body = pygame.Rect(0, 0, 400, 400)
-        Entity.__init__(self, "arena.png", body)
+        Entity.__init__(self, "img/arena.png", body)
 
         # Initialize basic arena traits
         self.num_bots = 2
@@ -32,9 +31,9 @@ class Arena(Entity):
         # Initialize real bots
         # For now, hardcode in two dumbbots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(Dumbbot(arena_data), 10, 100))
-        self.bots.add(Realbot(Dumbbot(arena_data), 200, 100))
-        self.bots.add(Realbot(Navbot(arena_data), 250, 100))
+        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), 10, 100))
+        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), 200, 100))
+        self.bots.add(Realbot(navbot.Navbot(arena_data), 250, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()

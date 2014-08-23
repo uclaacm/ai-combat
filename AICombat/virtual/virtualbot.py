@@ -13,7 +13,7 @@ probably find reasonably useful.
 """
 
 # Local imports
-import definitions as d
+import real.definitions as d
 
 class Virtualbot():
 
