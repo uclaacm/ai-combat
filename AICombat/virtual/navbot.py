@@ -1,4 +1,5 @@
 """
+from virtual.dumbbot import Dumbbot
 navbot.py
 
 A base virtualbot class that implements many useful navigation functions
@@ -7,15 +8,16 @@ A base virtualbot class that implements many useful navigation functions
 # Global imports
 import pygame
 import copy
-import sys
+import heapq
 
 # Local imports
 import real.definitions as d
 from virtual.virtualbot import Virtualbot
+from utils.comparable import Comparable
 
 class Navbot(Virtualbot):
 
-    class Waypoint():
+    class Waypoint(Comparable):
 
         def __init__(self, x, y, heuristic, distance, prev, direction):
             self.x = x
@@ -25,6 +27,13 @@ class Navbot(Virtualbot):
             self.priority = self.heuristic + self.distance
             self.prev = prev
             self.direction = direction
+
+        def __lt__(self, other):
+            if self.priority != other.priority:
+                return self.priority < other.priority
+            if self.heuristic != other.heuristic:
+                return self.heuristic < other.heuristic
+            return (self.x, self.y) < (other.x, other.y)
 
     def __init__(self, arena_data):
 
@@ -176,23 +185,18 @@ class Navbot(Virtualbot):
         x_diff = (dest[0]-start[0]) % 10
         y_diff = (dest[1]-start[1]) % 10
 
-        # targets contain candidate waypoints for visiting
-        targets = {}
-        targets[start] = Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None, self.direction)
+        # targets is a min-heap that contains candidate waypoints for visiting
+        targets = []
+        heapq.heappush(targets, Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None, self.direction))
 
         # waypoints save information about each visited waypoint
         waypoints = {}
+        waypoints[start] = targets[0]
         while targets:
 
             # Look for the waypoint closest to destination
-            wp = None
-            for w in targets.itervalues():
-                if (not wp or w.priority < wp.priority or
-                    w.priority == wp.priority and w.heuristic < wp.heuristic):
-                    wp = w
+            wp = heapq.heappop(targets)
             cur = (wp.x, wp.y)
-            targets.pop(cur)
-            waypoints[cur] = wp
 
             # Uncomment line below to see how A* searches
             # raw_input("{0} {1} {2}".format(cur, wp.priority, wp.heuristic))
@@ -206,7 +210,7 @@ class Navbot(Virtualbot):
                 next_y = wp.y + y_off
                 next_cur = (next_x, next_y)
 
-                # Make sure next location is legal, reachable, and unvisited
+                # Make sure next location is legal, reachable, and unseen
                 if (next_x < 0 or next_x >= self.arena_body.width or
                     next_y < 0 or next_y >= self.arena_body.height or
                     not self.navbot_reachable[next_x][next_y] or
@@ -221,7 +225,9 @@ class Navbot(Virtualbot):
                 elif diff_dir == 2:
                     cost += d.duration.TURN * 2
 
-                targets[next_cur] = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, i)
+                next_wp = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, i)
+                waypoints[next_cur] = next_wp
+                heapq.heappush(targets, next_wp)
 
         # If path is not found
         if dest not in waypoints:
@@ -259,12 +265,12 @@ class Navbot(Virtualbot):
         elif direction == 1:
             if cur[1] == dest[1]:
                 y_off = -y_diff
-            elif self._between(dest[1], cur[1], 10):
+            elif self._between(dest[1], cur[1], -10):
                 y_off = y_diff-10
         elif direction == 2:
             if cur[0] == dest[0]:
                 x_off = -x_diff
-            elif self._between(dest[0], cur[0], 10):
+            elif self._between(dest[0], cur[0], -10):
                 x_off = x_diff-10
         elif direction == 3:
             if cur[1] == dest[1]:
@@ -272,4 +278,3 @@ class Navbot(Virtualbot):
             elif self._between(dest[1], cur[1], 10):
                 y_off = y_diff
         return (x_off, y_off)
-
