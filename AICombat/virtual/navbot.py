@@ -116,11 +116,22 @@ class Navbot(Virtualbot):
         return True
 
     """
+    A function to tell navbot to forget its destination. This clears the command
+    sequence.
+    """
+    def forget_destination(self):
+        self.navbot_commands = []
+        self.navbot_destination = None
+
+    """
     An overrideable function for subclasses to interface with navbot. Here, you
     can process the realbot status and determine what to do without worrying
     too much about how navbot works.
     IN:  - realbot status
     OUT: - None to let navbot navigate, or an dict specifing an action to take
+    Note that if you return any action OTHER THAN CONTINUE, the navbot will
+    terminate its navigation and clear its command queue. You would have to
+    call set_destination again to navigate somewhere.
     """
     def delegate_action(self, status):
         """
@@ -141,7 +152,8 @@ class Navbot(Virtualbot):
     Main entry point from realbot into the navbot, overridden from virtualbot.
     Updates status and asks subclasses for an action. Manages the command
     sequence when during navigation. If you want full control over the navbot,
-    override this function.
+    override this function. Overriding this function invalidates
+    delgate_action()
     IN:  - realbot status
     OUT: - dict specifying action to take
     """
@@ -149,13 +161,14 @@ class Navbot(Virtualbot):
 
         self._update_status(status)
 
-        is_ready = self.state['action'] == d.action.WAIT
+        ready = self.state['action'] == d.action.WAIT
 
         res = self.delegate_action(status)
-        if res:
+        if res and res['action'] != d.action.CONTINUE:
+            self.forget_destination()
             return res
 
-        elif is_ready and len(self.navbot_commands) > 0:
+        elif ready and len(self.navbot_commands) > 0:
             c = self.navbot_commands.pop()
             if not self.navbot_commands:
                 self.navbot_destination = None
