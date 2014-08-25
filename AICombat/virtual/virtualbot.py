@@ -4,12 +4,12 @@ virtualbot.py
 A "virtualbot" is the mind of a physical "realbot." It decides how the realbot
 in the arena should behave.  When a realbot is in a WAIT state, it will
 ask a virtualbot for an action to perform. The virtualbot will be given
-information on the realbot's current state and vision, and decide on an action
-accordingly.
+information on the realbot's current state and what it sees, and decide on an
+action accordingly.
 
 This particular class is just a base class for specialized virtualbots to
-build upon. It contains some utility functions that most virtualbots will
-probably find reasonably useful.
+build upon. It contains some utility functions that most virtualbots may find
+useful.
 """
 
 # Local imports
@@ -21,7 +21,7 @@ class Virtualbot():
 
     """
     The basic constructor for a virtualbot
-        IN:  - dict containing initialization information about the arena
+    IN:  - dict containing initialization information about the arena
     The virtual bot programmer can decide how the bot looks by providing the
     image_path.
     """
@@ -35,16 +35,16 @@ class Virtualbot():
 
     """
     Called whenever the realbot is ready to execute an action
-        IN:  - a dict of various information about the bot status
-        OUT: - a dict specifying the action to take and its parameters
-    The default action is just to wait
+    IN:  - a dict of various information about the bot status
+    OUT: - a dict specifying the action to take and its parameters
+    The default action is just to continue (doing nothing)
     """
     def get_action(self, status):
-        return {'action' : d.action.WAIT}
+        return {'action' : d.action.CONTINUE}
 
     """
     Utility function to automatically store vital status attributes
-        IN:  - realbot status dict
+    IN:  - realbot status dict
     """
     def _update_status(self, status):
         self.state = status["bot"]["state"]

@@ -1,10 +1,10 @@
 """
 realbot.py
 
-A "real bot" is the physical body of a bot, containing its sprite, position,
-health, ammo, etc. It is controlled by a "virtual bot," which is like the mind
-of the bot. When the real bot is in a WAIT state, it will ask its virtual bot
-what action to take next. Given an action, the real bot will take appropriate
+A "realbot" is the physical body of a bot, containing its sprite, position,
+health, ammo, etc. It is controlled by a "virtualbot," which is like the mind
+of the bot. When the realbot is in a WAIT state, it will ask its virtualbot
+what action to take next. Given an action, the realbot will take appropriate
 steps to execute it properly.
 """
 
@@ -23,7 +23,7 @@ class Realbot(Fighter):
 
     def __init__(self, vbot, left=0, top=0):
 
-        # Attach virtual bot
+        # Attach virtualbot
         self.vbot = vbot
 
         # Call Fighter init
@@ -36,8 +36,8 @@ class Realbot(Fighter):
 
     """
     Called once per game loop iteration
-    If the real bot is executing an action, it will continue executing it.
-    Once it is done, it will ask the virtual bot for the next move.
+    If the realbot is executing an action, it will continue executing it.
+    Once it is done, it will ask the virtualbot for the next move.
     """
     def update(self, arena, elapsed):
 
@@ -55,6 +55,9 @@ class Realbot(Fighter):
         self._process_decision(arena, decision)
 
 
+    """
+    Given the virtualbot's decision, adjust the state accordingly
+    """
     def _process_decision(self, arena, decision):
 
         # If continue, simply do nothing
@@ -94,7 +97,9 @@ class Realbot(Fighter):
             self.state["action"] = d.action.SHOOT
             self.state["cooldown"] = d.duration.SHOOT
 
-
+    """
+    Forwards the realbot's state, e.g. move forward if walking.
+    """
     def _update_state(self, arena, elapsed):
 
         action = self.state["action"]
@@ -159,6 +164,9 @@ class Realbot(Fighter):
 
         return True
 
+    """
+    Override of Entity's get_info() to provide public information about the bot
+    """
     def get_info(self):
 
         info = {}
@@ -176,6 +184,9 @@ class Realbot(Fighter):
 
         return info
 
+    """
+    Compiles the status of the realbot to give to the virtualbot
+    """
     def _compile_status(self, arena, elapsed):
 
         # Bot information

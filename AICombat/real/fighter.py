@@ -4,7 +4,8 @@ fighter.py
 A fighter is anything that conducts combat in the arena. Generally, a fighter:
 1. Deals damage and/or
 2. Takes damage
-This includes bots, bullets, and possibly other entities in the future
+This includes bots, bullets, and possibly other entities in the future. This
+class is a base class for all of them.
 """
 
 # Global imports

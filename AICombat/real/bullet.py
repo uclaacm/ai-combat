@@ -1,7 +1,7 @@
 """
 bullet.py
 
-A basic bullet shot from a gun that all realbots have
+A basic bullet fired from a gun that all realbots have.
 """
 
 # Global imports
@@ -45,6 +45,9 @@ class Bullet(Fighter):
         if not arena.body.colliderect(self.body):
             self.hp = 0
 
+    """
+    Override of Entity's get_info()
+    """
     def get_info(self):
 
         info = {}

@@ -1,8 +1,20 @@
 """
-from virtual.dumbbot import Dumbbot
 navbot.py
 
-A base virtualbot class that implements many useful navigation functions
+A base virtualbot class that implements many useful navigation functions.
+Subclasses of navbot should interface with it as follows:
+
+For simple usage of its navigation system, override delegate_action()
+and call set_destination() to wherever you need to travel. Let it travel
+by returning None. If you want it to perform some other action, return that
+action. Note that set_destination() will return a boolean indicating whether it
+managed to find a path or not.
+
+If you want full control over navbot, override the get_action function. At the
+very least you must manually call _update_status() before you use
+set_destination(), or the computed path may not be accurate. You must also
+manage navbot_commands, which list the actions necessary to follow the computed
+path after a set_destination() call.
 """
 
 # Global imports
@@ -17,6 +29,11 @@ from utils.comparable import Comparable
 
 class Navbot(Virtualbot):
 
+    """
+    A utility Waypoint class that defines nodes in the map for path-finding.
+    These Waypoints support a heuristic and distance for use by A*, a prev
+    variable for tracking path, and a direction marker to account for turn rate.
+    """
     class Waypoint(Comparable):
 
         def __init__(self, x, y, heuristic, distance, prev, direction):
@@ -28,6 +45,9 @@ class Navbot(Virtualbot):
             self.prev = prev
             self.direction = direction
 
+        """
+        Mandatory override of the < operator for Comparable
+        """
         def __lt__(self, other):
             if self.priority != other.priority:
                 return self.priority < other.priority
@@ -37,6 +57,7 @@ class Navbot(Virtualbot):
 
     def __init__(self, arena_data):
 
+        # Initialization
         Virtualbot.__init__(self, arena_data)
         self.image_path = "img/navbot.png"
 
@@ -65,6 +86,13 @@ class Navbot(Virtualbot):
                 for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
 
+    """
+    Computes an action sequence that will bring the bot from its current
+    position to the specified destination. The sequence will show up in
+    self.navbot_commands.
+    IN:  - tuple of (x, y) specifying destination
+    OUT: - boolean indicating whether a path was successfully found
+    """
     def set_destination(self, dest):
         start = self.get_location()
 
@@ -83,13 +111,20 @@ class Navbot(Virtualbot):
 
         # Construct command queue from path
         self.navbot_commands = self._construct_commands(path)
-
         self.navbot_destination = dest
 
         return True
 
+    """
+    An overrideable function for subclasses to interface with navbot. Here, you
+    can process the realbot status and determine what to do without worrying
+    too much about how navbot works.
+    IN:  - realbot status
+    OUT: - None to let navbot navigate, or an dict specifing an action to take
+    """
     def delegate_action(self, status):
-        # Temporary demo of navigation
+        """
+        # Here's a demo of how delegate_action can be used
         checkpoints = [(250, 100),
                        (0, 0),
                        (360, 0),
@@ -99,7 +134,17 @@ class Navbot(Virtualbot):
             for i in xrange(len(checkpoints)-1):
                 if self.get_location() == checkpoints[i]:
                     self.set_destination(checkpoints[i+1])
+        """
+        pass
 
+    """
+    Main entry point from realbot into the navbot, overridden from virtualbot.
+    Updates status and asks subclasses for an action. Manages the command
+    sequence when during navigation. If you want full control over the navbot,
+    override this function.
+    IN:  - realbot status
+    OUT: - dict specifying action to take
+    """
     def get_action(self, status):
 
         self._update_status(status)
@@ -118,6 +163,10 @@ class Navbot(Virtualbot):
         else:
             return {"action": d.action.CONTINUE}
 
+    """
+    Private function that takes a path of waypoints and converts it into a
+    series of actions to take.
+    """
     def _construct_commands(self, path):
         LEFT_TURN = {"action": d.action.TURN,
                      "direction": d.direction.LEFT}
@@ -150,23 +199,32 @@ class Navbot(Virtualbot):
         commands.reverse()
         return commands
 
+    """
+    OUT: - tuple representing the bot's position as (x, y)
+    """
     def get_location(self):
         return (self.body.left, self.body.top)
 
+    """
+    Calculates the direction pointing from start to dest. If the result turns
+    IN:  - tuple indicating start point
+         - tuple indicating destination point
+    OUT: - direction from start to dest, -1 if not a defined direction
+    """
     def _get_direction(self, start, dest):
         x_diff = dest[0] - start[0]
         y_diff = dest[1] - start[1]
         if not y_diff:
             if x_diff > 0:
-                return 0
+                return d.direction.RIGHT
             elif x_diff < 0:
-                return 2
+                return d.direction.LEFT
         if not x_diff:
             if y_diff > 0:
-                return 3
+                return d.direction.DOWN
             elif y_diff < 0:
-                return 1
-        return 5
+                return d.direction.UP
+        return -1
 
     """
     Computes a path to the destination by applying A* on an extremely simple
@@ -175,7 +233,7 @@ class Navbot(Virtualbot):
     10x10 square chunks, and when computing a path, the search algorithm will
     consider traversing only these waypoints.
     IN:  - tuple indicating start point
-         - tuple indicating end point
+         - tuple indicating destination point
     OUT: - list containing points to follow to get to destination
     """
     def _find_path(self, start, dest):
@@ -217,6 +275,7 @@ class Navbot(Virtualbot):
                     next_cur in waypoints):
                     continue
 
+                # Compute cost to get there
                 cost = wp.distance
                 cost += (abs(x_off) + abs(y_off)) * d.duration.WALK
                 diff_dir = (wp.direction - i) % 4
@@ -225,11 +284,12 @@ class Navbot(Virtualbot):
                 elif diff_dir == 2:
                     cost += d.duration.TURN * 2
 
+                # Save as candidate location to visit
                 next_wp = Navbot.Waypoint(next_x, next_y, self._heuristic(next_cur, dest), cost, cur, i)
                 waypoints[next_cur] = next_wp
                 heapq.heappush(targets, next_wp)
 
-        # If path is not found
+        # If a path is not found
         if dest not in waypoints:
             return []
 
@@ -243,18 +303,26 @@ class Navbot(Virtualbot):
 
         return path
 
-
+    """
+    The heuristic for A*. Simply the Manhattan distance divided by speed.
+    """
     def _heuristic(self, loc, dest):
         return (abs(loc[0]-dest[0]) + abs(loc[1]-dest[1])) * d.duration.WALK
 
+    """
+    Utility function to determine if loc is between base and base+offset
+    """
     def _between(self, loc, base, offset):
         return (loc < base and loc > base+offset or
                 loc > base and loc < base+offset)
 
+    """
+    Computes how far in the x-y direction to move for the next waypoint. The
+    ugly if statement accounts for intermediate waypoints that are on the
+    destination point's axes (because the destination is rarely a multiple of
+    10 pixels distance from start).
+    """
     def _compute_offsets(self, cur, dest, direction, x_diff, y_diff):
-        # This ugly if structure accounts for intermediate waypoints on the axes
-        # of the destination. There must be waypoints on the axes or else the
-        # bot cannot reach the destination.
         x_off = d.DC[direction] * 10
         y_off = d.DR[direction] * 10
         if direction == 0:

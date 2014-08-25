@@ -15,7 +15,8 @@ from utils.resource import load_image
 class Entity(pygame.sprite.Sprite):
 
     """
-    All entities have a size. This is defined class-wide
+    All entities have a size. This is defined class-wide and should be
+    overridden.
     """
     SIZE = (0, 0)
 

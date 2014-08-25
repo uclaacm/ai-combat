@@ -38,6 +38,9 @@ class Arena(Entity):
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
 
+    """
+    Remove any dead entities from the sprite group.
+    """
     def remove_dead(self, sprite_group):
         rm_list = []
         for entity in sprite_group.sprites():

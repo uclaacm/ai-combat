@@ -1,5 +1,7 @@
 """
-An extremely dumb virtual bot used for testing purposes
+dumbbot.py
+
+An extremely dumb virtual bot used for testing purposes. Does random things.
 """
 
 # Global imports
