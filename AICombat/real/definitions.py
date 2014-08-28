@@ -5,17 +5,8 @@ Various definitions for AICombat.
 The technical details of how the objects are being defined don't really matter (although it may be interesting). Mainly, this file is important for declaring constants such as allowable bot actions, etc.
 """
 
-# Some hack to recreate C-style enums
-def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
-    return type('Enum', (), enums)
-
-# Some hack to recreate clean, attribute-indexable dictionaries
-# e.g. object.value as opposed to object["value"]
-class AttrDict(dict):
-    def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
-        self.__dict__ = self
+from utils.enum import enum
+from utils.attrdict import AttrDict
 
 # Legal bot actions
 action = enum('WAIT',
