@@ -78,11 +78,11 @@ class Navbot(Virtualbot):
         for x in xrange(self.arena_body.width):
             self.navbot_reachable.append([True] * self.arena_body.height)
         for w in self.arena_walls:
-            leftbound = max(0, w.left - Virtualbot.SIZE[0])
-            rightbound = w.left + w.width
+            leftbound = max(0, w.body.left - Virtualbot.SIZE[0])
+            rightbound = w.body.left + w.body.width
             for x in xrange(leftbound, rightbound):
-                topbound = max(0, w.top - Virtualbot.SIZE[1])
-                botbound = w.top + w.height
+                topbound = max(0, w.body.top - Virtualbot.SIZE[1])
+                botbound = w.body.top + w.body.height
                 for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
 
@@ -134,7 +134,6 @@ class Navbot(Virtualbot):
     call set_destination again to navigate somewhere.
     """
     def delegate_action(self, status):
-        """
         # Here's a demo of how delegate_action can be used
         checkpoints = [(250, 100),
                        (0, 0),
@@ -145,7 +144,6 @@ class Navbot(Virtualbot):
             for i in xrange(len(checkpoints)-1):
                 if self.get_location() == checkpoints[i]:
                     self.set_destination(checkpoints[i+1])
-        """
         pass
 
     """

@@ -10,6 +10,7 @@ import pygame
 # Local imports
 from real.realbot import Realbot
 from real.entity import Entity
+from real.wall import Wall
 from virtual import *
 
 class Arena(Entity):
@@ -22,7 +23,13 @@ class Arena(Entity):
 
         # Initialize basic arena traits
         self.num_bots = 2
-        self.walls = []
+        self.walls = pygame.sprite.LayeredUpdates()
+        self.walls.add(Wall(pygame.Rect(100, 100, 100, 10)))
+        self.walls.add(Wall(pygame.Rect(100, 200, 52, 148)))
+        self.walls.add(Wall(pygame.Rect(0, 30, 100, 10)))
+        self.walls.add(Wall(pygame.Rect(40, 100, 12, 96)))
+        self.walls.add(Wall(pygame.Rect(60, 150, 6, 86)))
+        self.walls.add(Wall(pygame.Rect(200, 0, 20, 96)))
         arena_data = {"num_bots": self.num_bots,
                       "walls": self.walls,
                       "height": self.body.height,
@@ -73,6 +80,7 @@ class Arena(Entity):
     """
     def draw(self, screen):
         screen.blit(self.base_image, self.base_rect)
+        self.walls.draw(screen)
         self.bots.draw(screen)
         self.others.draw(screen)
 

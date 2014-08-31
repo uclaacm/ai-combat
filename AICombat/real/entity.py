@@ -31,12 +31,6 @@ class Entity(pygame.sprite.Sprite):
         # Call Sprite initializer
         pygame.sprite.Sprite.__init__(self)
 
-        # Attach image, if given
-        if image_path:
-            self.base_image, self.base_rect = load_image(image_path)
-            self.image = self.base_image
-            self.rect = self.image.get_rect()
-
         # Set physical position, size, and direction
         # Note that physical size is not the same as sprite size
         # they're both centered on the same point, but the physical
@@ -44,7 +38,13 @@ class Entity(pygame.sprite.Sprite):
         # (body is the physical, rect is the sprite)
         self.body = body
         self.direction = direction
-        self.center()
+
+        # Attach image, if given
+        if image_path:
+            self.base_image, self.base_rect = load_image(image_path)
+            self.image = self.base_image
+            self.rect = self.image.get_rect()
+            self.center()
 
     """
     Called once per game loop iteration
