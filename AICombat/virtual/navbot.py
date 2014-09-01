@@ -80,10 +80,10 @@ class Navbot(Virtualbot):
         for w in self.arena_walls:
             leftbound = max(0, w.body.left - Virtualbot.SIZE[0])
             rightbound = w.body.left + w.body.width
-            for x in xrange(leftbound, rightbound+1):
+            for x in xrange(leftbound, rightbound):
                 topbound = max(0, w.body.top - Virtualbot.SIZE[1])
                 botbound = w.body.top + w.body.height
-                for y in xrange(topbound, botbound+1):
+                for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
 
     """
@@ -334,8 +334,8 @@ class Navbot(Virtualbot):
     10 pixels distance from start).
     """
     def _compute_offsets(self, cur, dest, direction, x_diff, y_diff):
-        x_off = d.DC[direction] * 10
-        y_off = d.DR[direction] * 10
+        x_off = d.DX[direction] * 10
+        y_off = d.DY[direction] * 10
         if direction == 0:
             if cur[0] == dest[0]:
                 x_off = 10-x_diff

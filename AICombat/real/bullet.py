@@ -32,7 +32,7 @@ class Bullet(Fighter):
     def update(self, arena, elapsed):
 
         # Move
-        self.move(self.vel*d.DC[self.direction], self.vel*d.DR[self.direction])
+        self.move(self.vel*d.DX[self.direction], self.vel*d.DY[self.direction])
 
         # Check for collision with any bots
         for bot in arena.bots.sprites():

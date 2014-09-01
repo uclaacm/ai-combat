@@ -81,7 +81,7 @@ class Realbot(Fighter):
             if ("distance" not in decision or
                 decision["distance"] <= 0):
                 return
-            unit_vel = (d.DC[self.direction], d.DR[self.direction])
+            unit_vel = (d.DX[self.direction], d.DY[self.direction])
             max_distance = predict_collision(self.body, unit_vel, self.arena_walls)
             self.state["max_distance"] = max_distance
             self.state["action"] = d.action.WALK
@@ -158,8 +158,8 @@ class Realbot(Fighter):
             distance = self.state["distance"]
             max_distance = self.state["max_distance"]
             amt = min(max_move, distance, max_distance)
-            next_top = self.body.top + amt*d.DR[self.direction]
-            next_left = self.body.left + amt*d.DC[self.direction]
+            next_top = self.body.top + amt*d.DY[self.direction]
+            next_left = self.body.left + amt*d.DX[self.direction]
             self.set_pos(next_left, next_top)
             distance -= amt
             max_distance -= amt

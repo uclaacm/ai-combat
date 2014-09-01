@@ -29,6 +29,6 @@ duration = AttrDict({'WAIT': 0,
                      'SHOOT': 100   # 100 ms per shot
                     })
 
-# Convenience (row, col) mappings for each cardinal direction
-DR = [0, -1, 0, 1]
-DC = [1, 0, -1, 0]
+# Convenience (x, y) mappings for each cardinal direction
+DX = [1, 0, -1, 0]
+DY = [0, -1, 0, 1]

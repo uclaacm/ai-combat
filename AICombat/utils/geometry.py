@@ -105,9 +105,9 @@ def predict_collision(body, vel, obstacles):
         b_perp_br = getattr(b, config[4])
         o_perp_tl = getattr(o, config[3])
         o_perp_br = getattr(o, config[4])
-        if (b_perp_tl >= o_perp_tl and b_perp_tl <= o_perp_br or
-            b_perp_br >= o_perp_tl and b_perp_br <= o_perp_br or
-            b_perp_tl <= o_perp_tl and b_perp_br >= o_perp_tl):
+        if (b_perp_tl >= o_perp_tl and b_perp_tl < o_perp_br or
+            b_perp_br > o_perp_tl and b_perp_br <= o_perp_br or
+            b_perp_tl < o_perp_tl and b_perp_br > o_perp_tl):
             b_para_f = getattr(b, config[1])
             o_para_b = getattr(o, config[2])
             if config[0] == "max" and b_para_f >= o_para_b:

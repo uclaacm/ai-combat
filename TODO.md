@@ -1,6 +1,6 @@
-- Document navbot
-- Implement wall collision detection for realbot
-    - Test navbot path finding performance against walls
+- Implement wall collision detection for bullet
+- Document wall collision mechanism
 - Write stalkerbot
     - Uses navbot to stalk enemy bots and shoots if in range
 - Write dirty paint mechanism
+- Package game into actual Python package
