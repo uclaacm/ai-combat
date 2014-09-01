@@ -6,6 +6,13 @@ A file with a bunch of utility functions for collisions and geometry
 
 # Global imports
 import math
+import copy
+
+"""
+Infinity constants
+"""
+POSINF = float("inf")
+NEGINF = float("-inf")
 
 """
 IN:  - pygame.Rect
@@ -73,3 +80,44 @@ def collide_rect_circle(rect, circle):
     # are probably colliding. In order to be exact, more computationally
     # expensive geometric techniques are required.
     return True
+
+def predict_collision(body, vel, obstacles):
+    b = copy.copy(body)
+    ob = copy.copy(obstacles)
+    ob.append(b)
+    for o in ob:
+        o.right = o.left + o.width
+        o.bottom = o.top + o.height
+    ob.pop()
+    if vel[0] < 0:
+        config = ["max", "left", "right", "top", "bottom"]
+    elif vel[0] > 0:
+        config = ["min", "right", "left", "top", "bottom"]
+    elif vel[1] < 0:
+        config = ["max", "top", "bottom", "left", "right"]
+    elif vel[1] > 0:
+        config = ["min", "bottom", "top", "left", "right"]
+    else:
+        return POSINF
+    limit = NEGINF if config[0] == "max" else POSINF
+    for o in obstacles:
+        b_perp_tl = getattr(b, config[3])
+        b_perp_br = getattr(b, config[4])
+        o_perp_tl = getattr(o, config[3])
+        o_perp_br = getattr(o, config[4])
+        if (b_perp_tl >= o_perp_tl and b_perp_tl <= o_perp_br or
+            b_perp_br >= o_perp_tl and b_perp_br <= o_perp_br or
+            b_perp_tl <= o_perp_tl and b_perp_br >= o_perp_tl):
+            b_para_f = getattr(b, config[1])
+            o_para_b = getattr(o, config[2])
+            if config[0] == "max" and b_para_f >= o_para_b:
+                limit = max(limit, o_para_b)
+            elif config[0] == "min" and b_para_f <= o_para_b:
+                limit = min(limit, o_para_b)
+
+    if limit == NEGINF or limit == POSINF:
+        return POSINF
+    if config[0] == "max":
+        return getattr(b, config[1]) - limit
+    else:
+        return limit - getattr(b, config[1])

@@ -21,7 +21,7 @@ class Realbot(Fighter):
 
     SIZE = (20, 20)
 
-    def __init__(self, vbot, left=0, top=0):
+    def __init__(self, vbot, arena, left=0, top=0):
 
         # Attach virtualbot
         self.vbot = vbot
@@ -33,6 +33,13 @@ class Realbot(Fighter):
         # Initialize states
         self.ammo = 10
         self.state = {"action": d.action.WAIT}
+        width = arena.body.width
+        height = arena.body.height
+        self.arena_walls = [w.body for w in arena.walls.sprites()]
+        self.arena_walls.append(pygame.Rect(-1, -1, width+1, 1))
+        self.arena_walls.append(pygame.Rect(-1, 0, 1, height+1))
+        self.arena_walls.append(pygame.Rect(0, height, width+1, 1))
+        self.arena_walls.append(pygame.Rect(width, -1, 1, height+1))
 
     """
     Called once per game loop iteration
@@ -74,6 +81,9 @@ class Realbot(Fighter):
             if ("distance" not in decision or
                 decision["distance"] <= 0):
                 return
+            unit_vel = (d.DC[self.direction], d.DR[self.direction])
+            max_distance = predict_collision(self.body, unit_vel, self.arena_walls)
+            self.state["max_distance"] = max_distance
             self.state["action"] = d.action.WALK
             self.state["distance"] = decision["distance"]
 
@@ -146,19 +156,17 @@ class Realbot(Fighter):
         elif action == d.action.WALK:
             max_move = 20 / d.duration.WALK
             distance = self.state["distance"]
-            amt = min(max_move, distance)
+            max_distance = self.state["max_distance"]
+            amt = min(max_move, distance, max_distance)
             next_top = self.body.top + amt*d.DR[self.direction]
             next_left = self.body.left + amt*d.DC[self.direction]
-            next_pos = pygame.Rect(next_left, next_top, 20, 20)
-            # Can't walk out of arena
-            if not arena.body.contains(next_pos):
-                self.state = {"action": d.action.WAIT}
-                return True
             self.set_pos(next_left, next_top)
             distance -= amt
+            max_distance -= amt
             # Still walking
-            if distance:
+            if distance and max_distance:
                 self.state["distance"] = distance
+                self.state["max_distance"] = max_distance
             else:
                 self.state = {"action": d.action.WAIT}
 

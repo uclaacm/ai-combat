@@ -75,15 +75,15 @@ class Navbot(Virtualbot):
         # Won't use _too_ much memory as long as the map isn't too big....
         # Allows O(1) path collision detection instead of O(len(walls))
         # Also allows easier construction of waypoint grid during path finding
-        for x in xrange(self.arena_body.width):
-            self.navbot_reachable.append([True] * self.arena_body.height)
+        for x in xrange(self.arena_body.height):
+            self.navbot_reachable.append([True] * self.arena_body.width)
         for w in self.arena_walls:
             leftbound = max(0, w.body.left - Virtualbot.SIZE[0])
             rightbound = w.body.left + w.body.width
-            for x in xrange(leftbound, rightbound):
+            for x in xrange(leftbound, rightbound+1):
                 topbound = max(0, w.body.top - Virtualbot.SIZE[1])
                 botbound = w.body.top + w.body.height
-                for y in xrange(topbound, botbound):
+                for y in xrange(topbound, botbound+1):
                     self.navbot_reachable[x][y] = False
 
     """

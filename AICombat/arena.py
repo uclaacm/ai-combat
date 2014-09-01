@@ -38,9 +38,9 @@ class Arena(Entity):
         # Initialize real bots
         # For now, hardcode in two dumbbots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), 10, 100))
-        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), 200, 100))
-        self.bots.add(Realbot(navbot.Navbot(arena_data), 250, 100))
+        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 10, 100))
+        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 200, 100))
+        self.bots.add(Realbot(navbot.Navbot(arena_data), self, 250, 100))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
