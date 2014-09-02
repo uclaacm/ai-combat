@@ -81,7 +81,7 @@ def collide_rect_circle(rect, circle):
     # expensive geometric techniques are required.
     return True
 
-def predict_collision(body, vel, obstacles):
+def predict_collision(body, obstacles, vx, vy):
     b = copy.copy(body)
     ob = copy.copy(obstacles)
     ob.append(b)
@@ -89,13 +89,13 @@ def predict_collision(body, vel, obstacles):
         o.right = o.left + o.width
         o.bottom = o.top + o.height
     ob.pop()
-    if vel[0] < 0:
+    if vx < 0:
         config = ["max", "left", "right", "top", "bottom"]
-    elif vel[0] > 0:
+    elif vx > 0:
         config = ["min", "right", "left", "top", "bottom"]
-    elif vel[1] < 0:
+    elif vy < 0:
         config = ["max", "top", "bottom", "left", "right"]
-    elif vel[1] > 0:
+    elif vy > 0:
         config = ["min", "bottom", "top", "left", "right"]
     else:
         return POSINF

@@ -1,4 +1,3 @@
-- Implement wall collision detection for bullet
 - Document wall collision mechanism
 - Write stalkerbot
     - Uses navbot to stalk enemy bots and shoots if in range
