@@ -36,6 +36,7 @@ class Realbot(Fighter):
         width = arena.body.width
         height = arena.body.height
         self.arena_walls = [w.body for w in arena.walls.sprites()]
+        # Treat the arena boundaries as walls
         self.arena_walls.append(pygame.Rect(-1, -1, width+1, 1))
         self.arena_walls.append(pygame.Rect(-1, 0, 1, height+1))
         self.arena_walls.append(pygame.Rect(0, height, width+1, 1))
@@ -157,6 +158,8 @@ class Realbot(Fighter):
         elif action == d.action.WALK:
             max_move = 20 / d.duration.WALK
             distance = self.state["distance"]
+            # max_distance is a previously calculated value that indicates when
+            # the bot will collide with a wall
             max_distance = self.state["max_distance"]
             amt = min(max_move, distance, max_distance)
             next_top = self.body.top + amt*d.DY[self.direction]

@@ -1,6 +1,7 @@
 """
 wall.py
 
+A generic wall. It doesn't do anything.
 """
 
 # Global imports
@@ -13,7 +14,8 @@ from real.entity import Entity
 class Wall(Entity):
 
     """
-    Initialize the wall
+    Initialize the wall. The wall currently has no texture; upon initialization,
+    it simply paints itself black.
     """
     def __init__(self, body):
 

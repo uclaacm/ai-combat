@@ -22,6 +22,7 @@ class Arena(Entity):
         Entity.__init__(self, "img/arena.png", body)
 
         # Initialize basic arena traits
+        # For now, hardcode some walls for testing
         self.num_bots = 2
         self.walls = pygame.sprite.LayeredUpdates()
         self.walls.add(Wall(pygame.Rect(100, 100, 100, 10)))
@@ -36,7 +37,7 @@ class Arena(Entity):
                       "width": self.body.width}
 
         # Initialize real bots
-        # For now, hardcode in two dumbbots for testing
+        # For now, hardcode in bots for testing
         self.bots = pygame.sprite.LayeredUpdates()
         self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 10, 100))
         self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 200, 100))

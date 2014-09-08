@@ -81,14 +81,31 @@ def collide_rect_circle(rect, circle):
     # expensive geometric techniques are required.
     return True
 
+"""
+Given an object, a list of obstacles, and the velocity of the object, determines
+how far the object can move before hitting any of the obstacles. Note that the
+result is only valid for movement along one of the coordinate axes, i.e.
+exactly one of vx or vy must be zero.
+IN:  - a pygame.Rect representing the object
+     - a list of pygame.Rect representing the obstacles
+     - a number representing velocity in the x coordinate
+     - a number representing velocity in the y coordinate
+OUT: - an int representing the max distance the object can travel before
+       colliding, or a negative/positive infinity float for no collision
+"""
 def predict_collision(body, obstacles, vx, vy):
+    # Create copies of the object/obstacles so some new utility attributes can
+    # be assigned
     b = copy.copy(body)
+    b.right = b.left + b.width
+    b.bottom = b.top + b.height
     ob = copy.copy(obstacles)
-    ob.append(b)
     for o in ob:
         o.right = o.left + o.width
         o.bottom = o.top + o.height
-    ob.pop()
+
+    # The algorithm works almost the same in all four directions, so just define
+    # specific configurations for each case
     if vx < 0:
         config = ["max", "left", "right", "top", "bottom"]
     elif vx > 0:
@@ -98,7 +115,23 @@ def predict_collision(body, obstacles, vx, vy):
     elif vy > 0:
         config = ["min", "bottom", "top", "left", "right"]
     else:
-        return POSINF
+        return 0
+
+    # The time complexity is O(n), n being the number of obstacles. Given that
+    # the velocity is along one of the coordinates, collision checking is a few
+    # simple bounds check. For instance, if the object is moving right (vx > 0),
+    # it will collide with an obstacle if:
+    # 1) The y-coordinate of the obstacle's top or bottom wall is between the
+    #    object's top and bottom wall, or the converse. This guarantees that
+    #    the object will hit the obstacle for some horizontal movement (not
+    #    necessarily going right).
+    # 2) The x-coordinate of the left wall of the obstacle is greater than the
+    #    x-coordinate of the right wall of the object. Thus, by moving right,
+    #    the object _will_ hit the obstacle.
+    # These conditions are generalized as the perpendicular check and the
+    # parallel check. If both of these are satisfied, then the max distance the
+    # object can travel is the difference between the obstacle's left wall and
+    # the object's right wall.
     limit = NEGINF if config[0] == "max" else POSINF
     for o in obstacles:
         b_perp_tl = getattr(b, config[3])

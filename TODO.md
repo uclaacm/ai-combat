@@ -1,4 +1,3 @@
-- Document wall collision mechanism
 - Write stalkerbot
     - Uses navbot to stalk enemy bots and shoots if in range
 - Write dirty paint mechanism
