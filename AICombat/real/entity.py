@@ -31,6 +31,9 @@ class Entity(pygame.sprite.Sprite):
         # Call Sprite initializer
         pygame.sprite.Sprite.__init__(self)
 
+        # Generate an entity ID. All entities have a unique ID.
+        self.eid = d.generate_id()
+
         # Set physical position, size, and direction
         # Note that physical size is not the same as sprite size
         # they're both centered on the same point, but the physical
@@ -62,12 +65,13 @@ class Entity(pygame.sprite.Sprite):
 
     """
     Called by other entites to retrieve public information about this
-    entity. Designed to be overridden by subclasses
+    entity. Designed to be supplemented by subclasses
     """
     def get_info(self):
-        info = {}
-        info["type"] = None
-        return info
+        return {"type": "entity",
+                "eid": self.eid,
+                "body": self.body,
+                "direction": self.direction}
 
     """
     Utility function that centers physical and sprite positions

@@ -1,12 +1,25 @@
 """
 definitions.py
 
-Various definitions for AICombat.
-The technical details of how the objects are being defined don't really matter (although it may be interesting). Mainly, this file is important for declaring constants such as allowable bot actions, etc.
+Various definitions and utility functions for real entities in AICombat.
+Mainly, this file is important for declaring constants such as allowable bot
+actions, etc.
 """
 
+# Global imports
+import random
+
+# Local imports
 from utils.enum import enum
 from utils.attrdict import AttrDict
+
+_id_database = set()
+
+def generate_id():
+    new_id = random.getrandbits(64)
+    while new_id in _id_database:
+        new_id = random.getrandbits(64)
+    return new_id
 
 # Legal bot actions
 action = enum('WAIT',

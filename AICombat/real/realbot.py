@@ -181,18 +181,13 @@ class Realbot(Fighter):
     """
     def get_info(self):
 
-        info = {}
-
-        # Type
-        info["entity"] = "bot"
+        info = Fighter.get_info(self)
 
         # Bot information
-        info["bot"] = {}
-        info["bot"]["state"] = self.state
-        info["bot"]["hp"] = self.hp
-        info["bot"]["ammo"] = self.ammo
-        info["bot"]["direction"] = self.direction
-        info["bot"]["body"] = self.body
+        bot_info = {"type": "realbot",
+                    "state": self.state,
+                    "ammo": self.ammo}
+        info.update(bot_info)
 
         return info
 

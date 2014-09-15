@@ -47,8 +47,8 @@ class Virtualbot():
     IN:  - realbot status dict
     """
     def _update_status(self, status):
-        self.state = status["bot"]["state"]
-        self.body = status["bot"]["body"]
-        self.hp = status["bot"]["hp"]
-        self.ammo = status["bot"]["ammo"]
-        self.direction = status["bot"]["direction"]
+        self.state = status["state"]
+        self.body = status["body"]
+        self.hp = status["hp"]
+        self.ammo = status["ammo"]
+        self.direction = status["direction"]

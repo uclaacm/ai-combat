@@ -45,3 +45,16 @@ class Fighter(Entity):
     def hit(self, dmg):
         self.hp -= dmg
 
+    """
+    Override of Entity's get_info() to provide public information about the
+    fighter
+    """
+    def get_info(self):
+
+        info = Entity.get_info(self)
+
+        # Fighter information
+        fighter_info = {"hp": self.hp}
+        info.update(fighter_info)
+
+        return info

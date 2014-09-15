@@ -26,6 +26,7 @@ class Bullet(Fighter):
         # Other bookkeeping variables
         self.origin = origin
         self.speed = 6
+        self.dmg = 15
         self.vel = (self.speed * d.DX[self.direction],
                     self.speed * d.DY[self.direction])
         self.max_dist = predict_collision(self.body, walls, *self.vel)
@@ -45,7 +46,7 @@ class Bullet(Fighter):
         # Check for collision with any bots
         for bot in arena.bots.sprites():
             if bot is not self.origin and self.body.colliderect(bot.body):
-                bot.hit(15)
+                bot.hit(self.dmg)
                 self.hp = 0
                 return
 
@@ -54,14 +55,11 @@ class Bullet(Fighter):
     """
     def get_info(self):
 
-        info = {}
-
-        # Type
-        info["entity"] = "bullet"
+        info = Fighter.get_info(self)
 
         # Bullet information
-        info["bullet"] = {}
-        info["bullet"]["direction"] = self.direction
-        info["bullet"]["body"] = self.body
+        bullet_info = {"type": "bullet",
+                       "dmg": self.dmg}
+        info.update(bullet_info)
 
         return info
