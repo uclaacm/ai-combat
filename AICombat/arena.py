@@ -33,7 +33,7 @@ class Arena(Entity):
         self.walls.add(Wall(pygame.Rect(60, 150, 6, 86)))
         self.walls.add(Wall(pygame.Rect(200, 0, 20, 96)))
         arena_data = {"num_bots": self.num_bots,
-                      "walls": self.walls,
+                      "walls": self.walls.sprites(),
                       "height": self.body.height,
                       "width": self.body.width}
 

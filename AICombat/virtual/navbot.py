@@ -87,6 +87,20 @@ class Navbot(Virtualbot):
                     self.navbot_reachable[x][y] = False
 
     """
+    Returns the walls of the arena
+    OUT: - list of real.wall.Wall
+    """
+    def get_walls(self):
+        return self.arena_walls
+
+    """
+    Returns the current navbot destination
+    OUT: - tuple of (x, y) specifying destination
+    """
+    def get_destination(self):
+        return self.navbot_destination
+
+    """
     Computes an action sequence that will bring the bot from its current
     position to the specified destination. The sequence will show up in
     self.navbot_commands.
@@ -139,7 +153,7 @@ class Navbot(Virtualbot):
                        (0, 0),
                        (360, 0),
                        (11, 136),
-                       (211, 321)]
+                       (325, 225)]
         if not self.navbot_destination:
             for i in xrange(len(checkpoints)-1):
                 if self.get_location() == checkpoints[i]:
