@@ -8,6 +8,7 @@ Maintains the list of bots and other objects.
 import pygame
 
 # Local imports
+import utils.geometry
 from real.realbot import Realbot
 from real.entity import Entity
 from real.wall import Wall
@@ -85,6 +86,13 @@ class Arena(Entity):
         self.walls.draw(screen)
         self.bots.draw(screen)
         self.others.draw(screen)
+        self.draw_sight(screen)
 
         # For now, just hardcode the entire arena to be redrawn
         return [self.base_rect]
+
+    def draw_sight(self, screen):
+        for bot in self.bots.sprites():
+            r = bot.sight_range
+            c = utils.geometry.get_center(bot.body)
+            pygame.draw.circle(screen, pygame.Color("0x006600"), c, r, 1)

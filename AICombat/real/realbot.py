@@ -32,6 +32,7 @@ class Realbot(Fighter):
 
         # Initialize states
         self.ammo = 10
+        self.sight_range = 50
         self.state = {"action": d.action.WAIT}
         width = arena.body.width
         height = arena.body.height
@@ -211,8 +212,9 @@ class Realbot(Fighter):
         status["objects"] = {}
         status["objects"]["bots"] = []
         center = get_center(self.body)
-        # Temporary method: circle with radius 100
-        sight = pygame.Rect(center[0], center[1], 100, 100)
+        # Temporary sight method: circle
+        r = self.sight_range
+        sight = pygame.Rect(center[0], center[1], r, r)
         for entity in arena.bots.sprites():
             if entity != self and collide_rect_circle(entity.body, sight):
                 status["objects"]["bots"].append(entity.get_info())
