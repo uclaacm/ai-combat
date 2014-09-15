@@ -104,9 +104,8 @@ class Realbot(Fighter):
         # If shoot, toggle action state and materialize the bullet
         elif decision['action'] == d.action.SHOOT:
             # Center bullet on bot's position
-            bullet_left = self.body.left + Realbot.SIZE[0]/2 - Bullet.SIZE[0]/2
-            bullet_top = self.body.top + Realbot.SIZE[1]/2 - Bullet.SIZE[1]/2
-            arena.others.add(Bullet(self, self.arena_walls, self.direction, bullet_left, bullet_top))
+            bullet_body = scale(self.body, Bullet.SIZE)
+            arena.others.add(Bullet(self, self.arena_walls, self.direction, bullet_body.left, bullet_body.top))
             self.state["action"] = d.action.SHOOT
             self.state["cooldown"] = d.duration.SHOOT
 

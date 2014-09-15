@@ -5,6 +5,7 @@ A file with a bunch of utility functions for collisions and geometry
 """
 
 # Global imports
+import pygame
 import math
 import copy
 
@@ -20,6 +21,17 @@ OUT: - 2-tuple representing the center point of the rect
 """
 def get_center(rect):
     return (rect.left + rect.width/2, rect.top + rect.height/2)
+
+"""
+Scales a rectangle to the new size using the center as pivot
+IN:  - pygame.Rect
+     - 2-tuple representing new size in (width, height)
+OUT: - scaled pygame.Rect
+"""
+def scale(rect, size):
+    new_left = rect.left + rect.width/2 - size[0]/2
+    new_top = rect.top + rect.height/2 - size[1]/2
+    return pygame.Rect(new_left, new_top, size[0], size[1])
 
 """
 IN:  - 2-tuple representing the 1st point
