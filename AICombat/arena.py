@@ -45,6 +45,7 @@ class Arena(Entity):
         self.bots.add(Realbot(navbot.Navbot(arena_data), self, 250, 100))
         self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 350, 250))
         self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 0, 0))
+        self.bots.add(Realbot(playerbot.Playerbot(arena_data), self, 200, 350))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()

@@ -1,1 +1,1 @@
-__all__ = ["dumbbot", "navbot", "stalkerbot"]
+__all__ = ["dumbbot", "navbot", "stalkerbot", "playerbot"]

@@ -69,6 +69,10 @@ class Realbot(Fighter):
     """
     def _process_decision(self, arena, decision):
 
+        # If invalid input, do nothing
+        if not isinstance(decision, dict) or "action" not in decision:
+            return
+
         # If continue, simply do nothing
         if decision['action'] == d.action.CONTINUE:
             return
