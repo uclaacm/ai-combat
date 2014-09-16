@@ -44,6 +44,7 @@ class Arena(Entity):
         self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 200, 100))
         self.bots.add(Realbot(navbot.Navbot(arena_data), self, 250, 100))
         self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 350, 250))
+        self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 0, 0))
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()
@@ -86,7 +87,7 @@ class Arena(Entity):
         self.walls.draw(screen)
         self.bots.draw(screen)
         self.others.draw(screen)
-        self.draw_sight(screen)
+        #self.draw_sight(screen)
 
         # For now, just hardcode the entire arena to be redrawn
         return [self.base_rect]

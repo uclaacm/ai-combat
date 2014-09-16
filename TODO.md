@@ -1,4 +1,4 @@
-- Write stalkerbot
-    - Uses navbot to stalk enemy bots and shoots if in range
+- Find a way to include pygame for easier installation
+- Write a global config system
 - Write dirty paint mechanism
 - Package game into actual Python package

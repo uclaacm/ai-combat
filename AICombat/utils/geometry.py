@@ -106,6 +106,11 @@ OUT: - an int representing the max distance the object can travel before
        colliding, or a negative/positive infinity float for no collision
 """
 def predict_collision(body, obstacles, vx, vy):
+
+    # Handle case where body is already colliding with an obstacle
+    if body.collidelist(obstacles) != -1:
+        return 0
+
     # Create copies of the object/obstacles so some new utility attributes can
     # be assigned
     b = copy.copy(body)
