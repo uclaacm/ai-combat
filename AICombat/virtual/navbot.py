@@ -11,7 +11,7 @@ action. Note that set_destination() will return a boolean indicating whether it
 managed to find a path or not.
 
 If you want full control over navbot, override the get_action function. At the
-very least you must manually call _update_status() before you use
+very least you must manually call update_status() before you use
 set_destination(), or the computed path may not be accurate. You must also
 manage navbot_commands, which list the actions necessary to follow the computed
 path after a set_destination() call.
@@ -171,7 +171,7 @@ class Navbot(Virtualbot):
     """
     def get_action(self, status):
 
-        self._update_status(status)
+        self.update_status(status)
 
         ready = self.state['action'] == d.action.WAIT
 

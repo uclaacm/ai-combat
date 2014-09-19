@@ -1,4 +1,7 @@
-- Find a way to include pygame for easier installation
+- Document stalkerbot
+- Document playerbot
+- Write a decorator system to provide a more dev-friendly interface for writing virtualbots
 - Write a global config system
 - Write dirty paint mechanism
 - Package game into actual Python package
+  - Require pygame

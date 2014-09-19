@@ -46,7 +46,7 @@ class Virtualbot():
     Utility function to automatically store vital status attributes
     IN:  - realbot status dict
     """
-    def _update_status(self, status):
+    def update_status(self, status):
         self.state = status["state"]
         self.body = status["body"]
         self.hp = status["hp"]
