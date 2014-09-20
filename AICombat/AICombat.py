@@ -17,7 +17,7 @@ import pygame
 # Local imports
 from battle import Battle
 
-class Game():
+class Game(object):
 
     """
     Constructor for Game. Initializes pygame and sets up the window

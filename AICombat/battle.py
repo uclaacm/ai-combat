@@ -7,7 +7,7 @@ Responsible for all battle logic. Maintains the arena object
 # Local imports
 from arena import Arena
 
-class Battle():
+class Battle(object):
 
     def __init__(self):
 

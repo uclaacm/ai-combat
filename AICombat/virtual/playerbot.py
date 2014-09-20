@@ -1,5 +1,8 @@
 """
 playerbot.py
+
+A virtualbot that is controlled by keyboard. Great for testing your skills
+against the AI.
 """
 
 # Global imports
@@ -27,6 +30,8 @@ class Playerbot(Virtualbot):
 
         self.update_status(status)
 
+        # Alias the actions for easy use
+        # This is very ugly; will try to fix later
         LEFT_TURN = {"action": d.action.TURN,
                      "direction": d.direction.LEFT}
         RIGHT_TURN = {"action": d.action.TURN,
@@ -36,9 +41,12 @@ class Playerbot(Virtualbot):
                 "distance": 20}
         WAIT = {"action": d.action.WAIT}
 
+        # Uses pygame to retrieve all keys currently being pressed
         keys = pygame.key.get_pressed()
 
-        # Shooting has highest priority
+        # Press space to shoot. Shooting has higher priority over moving
+        # The shoot_lock prevents the bot from continuously shooting by forcing
+        # the player to lift and press again
         if keys[pygame.K_SPACE]:
             if not self.shoot_lock:
                 self.shoot_lock = True
@@ -46,6 +54,9 @@ class Playerbot(Virtualbot):
         else:
             self.shoot_lock = False
 
+        # Check the direction keys for movement. Pressing an arrow will
+        # automatically compel the bot to turn to that direction, if not already
+        # facing it, before moving.
         for i, k in enumerate(self.key_directions):
             if keys[k]:
                 if self.direction != i:

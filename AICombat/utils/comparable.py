@@ -1,4 +1,4 @@
-class Comparable():
+class Comparable(object):
 
     def __lt__(self, other):
         raise NotImplementedError("__lt__ must be overloaded for Comparable")

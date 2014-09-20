@@ -15,7 +15,7 @@ useful.
 # Local imports
 import real.definitions as d
 
-class Virtualbot():
+class Virtualbot(object):
 
     SIZE = (20, 20)
 

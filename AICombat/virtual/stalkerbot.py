@@ -1,5 +1,11 @@
 """
 stalkerbot.py
+
+An aggressive virtualbot that wanders around the arena searching for enemy
+bots. Upon finding an enemy, the stalkerbot will chase after and attack it
+until either it or its target is dead (or the target goes out of sight).
+
+Stalkerbot uses Navbot to navigate and chase.
 """
 
 # Global imports
@@ -21,27 +27,39 @@ class Stalkerbot(Navbot):
 
         # Stalkerbot stuff
         self.target = None
-        ### How many frames to wait before shooting again
+        ### A lambda is just a tiny, anonymous in-line function. In this case,
+        ### it's used as an alias to produce a random cooldown value
         self.shoot_cooldown = lambda: random.randint(5,15)
         self.shoot_counter = 0
-        ### How many frames to wait before computing path to target again
         self.search_cooldown = lambda: random.randint(5,10)
         self.search_counter = 0
 
+    """
+    Reset variables and choose a new target to stalk
+    """
     def switch_target(self, enemies):
         self.shoot_counter = 0
         self.search_counter = 0
         return random.choice(enemies)
 
+    """
+    Overridden from Navbot. Most of the time, Stalkerbot is navigating to a
+    specific point in the arena, which it lets Navbot handle. However, if it's
+    stalking an enemy, it will shoot (respecting a shoot cooldown) every time
+    the enemy comes within firing range. Stalkerbot periodically updates its
+    target's position (respecting a search cooldown).
+    """
     def delegate_action(self, status):
 
+        # Cool down
         self.shoot_counter -= 1
         self.search_counter -= 1
 
         enemies = status["objects"]["bots"]
         if enemies:
 
-            # Get valid target
+            # Get valid target, whether it's making sure the current target is
+            # still here, or selecting a new target
             if not self.target:
                 self.target = self.switch_target(enemies)
             else:
@@ -51,12 +69,13 @@ class Stalkerbot(Navbot):
                 else:
                     self.target = t[0]
 
-            # See if you can shoot the target
+            # See if it can shoot the target
             if self.shoot_counter <= 0 and self.can_hit(self.target["body"]):
                 self.shoot_counter = self.shoot_cooldown()
                 self.search_counter = 0
                 return {"action": d.action.SHOOT}
 
+            # Periodically update target coordinates
             if self.search_counter <= 0:
                 self.search_counter = self.search_cooldown()
                 target_loc = (self.target["body"].left, self.target["body"].top)
@@ -64,12 +83,21 @@ class Stalkerbot(Navbot):
 
         else:
 
+            # Wander around the arena to look for a target
             while not self.get_destination():
                 x = random.randrange(self.arena_body.width)
                 y = random.randrange(self.arena_body.height)
                 self.set_destination((x, y))
 
+    """
+    Given a target's position, this method determines whether a bullet shot by
+    the Stalkerbot will strike the target.
+    IN:  - pygame.Rect representing the target's position
+    OUT: - bool indicating the bullet can hit or not
+    """
     def can_hit(self, body):
+
+        # Simulate bullet collision trajectory with target
         bullet_body = g.scale(self.body, Bullet.SIZE)
         body_distance = g.predict_collision(bullet_body,
                                             [body],
@@ -77,6 +105,8 @@ class Stalkerbot(Navbot):
                                             d.DY[self.direction])
         if body_distance == g.POSINF:
             return False
+
+        # Simulate bullet collision trajectory with walls
         walls = [w.body for w in self.get_walls()]
         block_distance = g.predict_collision(bullet_body,
                                              walls,
@@ -84,5 +114,6 @@ class Stalkerbot(Navbot):
                                              d.DY[self.direction])
         if block_distance < body_distance:
             return False
+
         return True
 
