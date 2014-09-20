@@ -31,7 +31,7 @@ class Stalkerbot(Navbot):
         ### it's used as an alias to produce a random cooldown value
         self.shoot_cooldown = lambda: random.randint(5,15)
         self.shoot_counter = 0
-        self.search_cooldown = lambda: random.randint(5,10)
+        self.search_cooldown = lambda: random.randint(3,7)
         self.search_counter = 0
 
     """
@@ -80,6 +80,7 @@ class Stalkerbot(Navbot):
                 self.search_counter = self.search_cooldown()
                 target_loc = (self.target["body"].left, self.target["body"].top)
                 self.set_destination(target_loc)
+
 
         else:
 

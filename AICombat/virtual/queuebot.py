@@ -19,7 +19,7 @@ class Queuebot(Virtualbot):
 
         # Initialization
         Virtualbot.__init__(self, arena_data)
-        
+
         # Queuebot stuff
         self.command_queue = deque()
 
@@ -48,32 +48,32 @@ class Queuebot(Virtualbot):
         a = {"action": d.action.TURN,
              "direction": d.direction.LEFT}
         self.command_queue.append(a)
-        
+
     def queue_right(self):
         a = {"action": d.action.TURN,
              "direction": d.direction.RIGHT}
         self.command_queue.append(a)
-        
+
     def queue_wait(self):
         a = {"action": d.action.WAIT}
         self.command_queue.append(a)
-        
+
     def queue_continue(self):
         a = {"action": d.action.CONTINUE}
         self.command_queue.append(a)
-        
+
     def queue_walk(self, distance=999999):
         a = {"action": d.action.WALK,
              "distance": distance}
         self.command_queue.append(a)
-        
+
     def queue_shoot(self):
         a = {"action": d.action.SHOOT}
         self.command_queue.append(a)
-        
+
     def queue_reverse(self):
         self.queue_left()
         self.queue_left()
-        
+
     def queue_actions(self, actions):
-        sef.command_queue.extend(actions)
+        self.command_queue.extend(actions)

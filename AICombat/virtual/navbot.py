@@ -61,8 +61,9 @@ class Navbot(Virtualbot):
         Virtualbot.__init__(self, arena_data)
         self.image_path = "img/navbot.png"
 
-        # Declare navbot internals
+        # Navbot stuff
         self.navbot_destination = None
+        self.navbot_ready = True
         self.navbot_waypoints = []
         self.navbot_commands = []
         self.navbot_reachable = []
@@ -127,6 +128,9 @@ class Navbot(Virtualbot):
         self.navbot_commands = self._construct_commands(path)
         self.navbot_destination = dest
 
+        # Setting a new path immediately ends the old path
+        self.navbot_ready = True
+
         return True
 
     """
@@ -158,7 +162,6 @@ class Navbot(Virtualbot):
             for i in xrange(len(checkpoints)-1):
                 if self.get_location() == checkpoints[i]:
                     self.set_destination(checkpoints[i+1])
-        pass
 
     """
     Main entry point from realbot into the navbot, overridden from virtualbot.
@@ -173,14 +176,14 @@ class Navbot(Virtualbot):
 
         self.update_status(status)
 
-        ready = self.state['action'] == d.action.WAIT
+        self.navbot_ready = self.state['action'] == d.action.WAIT
 
         res = self.delegate_action(status)
         if res and res['action'] != d.action.CONTINUE:
             self.forget_destination()
             return res
 
-        elif ready and len(self.navbot_commands) > 0:
+        elif self.navbot_ready and len(self.navbot_commands) > 0:
             c = self.navbot_commands.pop()
             if not self.navbot_commands:
                 self.navbot_destination = None
