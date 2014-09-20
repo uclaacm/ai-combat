@@ -86,8 +86,8 @@ class Stalkerbot(Navbot):
 
             # Wander around the arena to look for a target
             while not self.get_destination():
-                x = random.randrange(self.arena_body.width)
-                y = random.randrange(self.arena_body.height)
+                x = random.randrange(self.arena.width)
+                y = random.randrange(self.arena.height)
                 self.set_destination((x, y))
 
     """
@@ -108,9 +108,8 @@ class Stalkerbot(Navbot):
             return False
 
         # Simulate bullet collision trajectory with walls
-        walls = [w.body for w in self.get_walls()]
         block_distance = g.predict_collision(bullet_body,
-                                             walls,
+                                             self.walls,
                                              d.DX[self.direction],
                                              d.DY[self.direction])
         if block_distance < body_distance:

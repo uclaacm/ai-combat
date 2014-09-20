@@ -18,7 +18,6 @@ path after a set_destination() call.
 """
 
 # Global imports
-import pygame
 import copy
 import heapq
 
@@ -68,31 +67,20 @@ class Navbot(Virtualbot):
         self.navbot_commands = []
         self.navbot_reachable = []
 
-        # Save arena layout
-        self.arena_body = pygame.Rect(0, 0, arena_data["width"], arena_data["height"])
-        self.arena_walls = arena_data["walls"]
-
         # Compute all reachable and unreachable pixels
         # Won't use _too_ much memory as long as the map isn't too big....
         # Allows O(1) path collision detection instead of O(len(walls))
         # Also allows easier construction of waypoint grid during path finding
-        for x in xrange(self.arena_body.height):
-            self.navbot_reachable.append([True] * self.arena_body.width)
-        for w in self.arena_walls:
-            leftbound = max(0, w.body.left - Virtualbot.SIZE[0])
-            rightbound = w.body.left + w.body.width
+        for x in xrange(self.arena.height):
+            self.navbot_reachable.append([True] * self.arena.width)
+        for w in self.walls:
+            leftbound = max(0, w.left - self.body.width)
+            rightbound = w.left + w.width
             for x in xrange(leftbound, rightbound):
-                topbound = max(0, w.body.top - Virtualbot.SIZE[1])
-                botbound = w.body.top + w.body.height
+                topbound = max(0, w.top - self.body.height)
+                botbound = w.top + w.height
                 for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
-
-    """
-    Returns the walls of the arena
-    OUT: - list of real.wall.Wall
-    """
-    def get_walls(self):
-        return self.arena_walls
 
     """
     Returns the current navbot destination
@@ -112,7 +100,7 @@ class Navbot(Virtualbot):
         start = self.get_location()
 
         # Perform basic feasibility checks
-        if not self.arena_body.collidepoint(dest):
+        if not self.arena.collidepoint(dest):
             return False
         if dest == self.navbot_destination or dest == start:
             return True
@@ -297,8 +285,8 @@ class Navbot(Virtualbot):
                 next_cur = (next_x, next_y)
 
                 # Make sure next location is legal, reachable, and unseen
-                if (next_x < 0 or next_x >= self.arena_body.width or
-                    next_y < 0 or next_y >= self.arena_body.height or
+                if (next_x < 0 or next_x >= self.arena.width or
+                    next_y < 0 or next_y >= self.arena.height or
                     not self.navbot_reachable[next_x][next_y] or
                     next_cur in waypoints):
                     continue

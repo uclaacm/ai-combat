@@ -24,7 +24,6 @@ class Arena(Entity):
 
         # Initialize basic arena traits
         # For now, hardcode some walls for testing
-        self.num_bots = 2
         self.walls = pygame.sprite.LayeredUpdates()
         self.walls.add(Wall(pygame.Rect(100, 100, 100, 10)))
         self.walls.add(Wall(pygame.Rect(100, 200, 52, 148)))
@@ -32,20 +31,24 @@ class Arena(Entity):
         self.walls.add(Wall(pygame.Rect(40, 100, 12, 96)))
         self.walls.add(Wall(pygame.Rect(60, 150, 6, 86)))
         self.walls.add(Wall(pygame.Rect(200, 0, 20, 96)))
-        arena_data = {"num_bots": self.num_bots,
-                      "walls": self.walls.sprites(),
-                      "height": self.body.height,
-                      "width": self.body.width}
 
         # Initialize real bots
         # For now, hardcode in bots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 10, 100))
-        self.bots.add(Realbot(dumbbot.Dumbbot(arena_data), self, 200, 100))
-        self.bots.add(Realbot(navbot.Navbot(arena_data), self, 250, 100))
-        self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 350, 250))
-        self.bots.add(Realbot(stalkerbot.Stalkerbot(arena_data), self, 0, 0))
-        self.bots.add(Realbot(playerbot.Playerbot(arena_data), self, 200, 350))
+        bot_info = [(10, 100, dumbbot.Dumbbot),
+                    (200, 100, dumbbot.Dumbbot),
+                    (250, 100, navbot.Navbot),
+                    (350, 250, stalkerbot.Stalkerbot),
+                    (0, 0, stalkerbot.Stalkerbot),
+                    (200, 350, playerbot.Playerbot)]
+        arena_data = {"walls": [w.body for w in self.walls.sprites()],
+                      "arena": self.body}
+        for info in bot_info:
+            rbot = Realbot(self, info[0], info[1])
+            arena_data["bot"] = rbot.body
+            vbot = info[2](arena_data)
+            rbot.attach_vbot(vbot)
+            self.bots.add(rbot)
 
         # Declare another list that stores non-bots
         self.others = pygame.sprite.LayeredUpdates()

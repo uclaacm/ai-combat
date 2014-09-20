@@ -19,29 +19,34 @@ from utils.geometry import *
 
 class Realbot(Fighter):
 
-    SIZE = (20, 20)
+    SIZE = (16, 16)
 
-    def __init__(self, vbot, arena, left=0, top=0):
-
-        # Attach virtualbot
-        self.vbot = vbot
+    def __init__(self, arena, left=0, top=0):
 
         # Call Fighter init
         body = pygame.Rect(left, top, Realbot.SIZE[0], Realbot.SIZE[1])
-        Fighter.__init__(self, vbot.image_path, body, hp=100)
+        Fighter.__init__(self, None, body, hp=100)
 
         # Initialize states
+        self.vbot = None
         self.ammo = 10
         self.sight_range = 50
         self.state = {"action": d.action.WAIT}
+        self.walls = [w.body for w in arena.walls.sprites()]
+        ### Treat the arena boundaries as walls
         width = arena.body.width
         height = arena.body.height
-        self.arena_walls = [w.body for w in arena.walls.sprites()]
-        # Treat the arena boundaries as walls
-        self.arena_walls.append(pygame.Rect(-1, -1, width+1, 1))
-        self.arena_walls.append(pygame.Rect(-1, 0, 1, height+1))
-        self.arena_walls.append(pygame.Rect(0, height, width+1, 1))
-        self.arena_walls.append(pygame.Rect(width, -1, 1, height+1))
+        self.walls.append(pygame.Rect(-1, -1, width+1, 1))
+        self.walls.append(pygame.Rect(-1, 0, 1, height+1))
+        self.walls.append(pygame.Rect(0, height, width+1, 1))
+        self.walls.append(pygame.Rect(width, -1, 1, height+1))
+
+    """
+    Called by arena to attach a virtualbot to this realbot
+    """
+    def attach_vbot(self, vbot):
+        self.vbot = vbot
+        self.set_image(vbot.image_path)
 
     """
     Called once per game loop iteration
@@ -51,23 +56,23 @@ class Realbot(Fighter):
     def update(self, arena, elapsed):
 
         # Update state and return if not ready for next decision
-        if not self._update_state(arena, elapsed):
+        if not self.update_state(arena, elapsed):
             return
 
         # Compile status information to tell the virtualbot
-        status = self._compile_status(arena, elapsed)
+        status = self.compile_status(arena, elapsed)
 
         # Ask virtualbot for what to do next
         decision = self.vbot.get_action(status)
 
         # Process decision
-        self._process_decision(arena, decision)
+        self.process_decision(arena, decision)
 
 
     """
     Given the virtualbot's decision, adjust the state accordingly
     """
-    def _process_decision(self, arena, decision):
+    def process_decision(self, arena, decision):
 
         # If invalid input, do nothing
         if not isinstance(decision, dict) or "action" not in decision:
@@ -87,7 +92,7 @@ class Realbot(Fighter):
             if ("distance" not in decision or
                 decision["distance"] <= 0):
                 return
-            max_distance = predict_collision(self.body, self.arena_walls,
+            max_distance = predict_collision(self.body, self.walls,
                                              d.DX[self.direction],
                                              d.DY[self.direction])
             self.state["max_distance"] = max_distance
@@ -109,14 +114,14 @@ class Realbot(Fighter):
         elif decision['action'] == d.action.SHOOT:
             # Center bullet on bot's position
             bullet_body = scale(self.body, Bullet.SIZE)
-            arena.others.add(Bullet(self, self.arena_walls, self.direction, bullet_body.left, bullet_body.top))
+            arena.others.add(Bullet(self, self.walls, self.direction, bullet_body.left, bullet_body.top))
             self.state["action"] = d.action.SHOOT
             self.state["cooldown"] = d.duration.SHOOT
 
     """
     Forwards the realbot's state, e.g. move forward if walking.
     """
-    def _update_state(self, arena, elapsed):
+    def update_state(self, arena, elapsed):
 
         action = self.state["action"]
 
@@ -198,7 +203,7 @@ class Realbot(Fighter):
     """
     Compiles the status of the realbot to give to the virtualbot
     """
-    def _compile_status(self, arena, elapsed):
+    def compile_status(self, arena, elapsed):
 
         # Bot information
         status = self.get_info()

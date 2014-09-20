@@ -17,8 +17,6 @@ import real.definitions as d
 
 class Virtualbot(object):
 
-    SIZE = (20, 20)
-
     """
     The basic constructor for a virtualbot
     IN:  - dict containing initialization information about the arena
@@ -26,12 +24,18 @@ class Virtualbot(object):
     image_path.
     """
     def __init__(self, arena_data):
+
+        # Arena information
+        self.walls = arena_data["walls"]
+        self.arena = arena_data["arena"]
+
+        # Realbot information
+        self.body = arena_data["bot"]
+        self.direction = 0
         self.image_path = None
         self.state = None
-        self.body = None
         self.hp = None
         self.ammo = None
-        self.direction = None
 
     """
     Called whenever the realbot is ready to execute an action

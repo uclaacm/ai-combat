@@ -43,11 +43,22 @@ class Entity(pygame.sprite.Sprite):
         self.direction = direction
 
         # Attach image, if given
+        self.base_image = None
+        self.image = None
+        self.base_rect = None
+        self.rect = None
         if image_path:
-            self.base_image, self.base_rect = load_image(image_path)
-            self.image = self.base_image
-            self.rect = self.image.get_rect()
-            self.center()
+            self.set_image(image_path)
+
+    """
+    Given an image path, loads the image as a pygame Surface and adjust the
+    sprite drawing variables
+    """
+    def set_image(self, image_path):
+        self.base_image, self.base_rect = load_image(image_path)
+        self.image = self.base_image
+        self.rect = self.image.get_rect()
+        self.center()
 
     """
     Called once per game loop iteration
