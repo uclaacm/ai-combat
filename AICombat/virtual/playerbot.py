@@ -9,37 +9,21 @@ against the AI.
 import pygame
 
 # Local imports
-import real.definitions as d
-from virtual.virtualbot import Virtualbot
+from virtual.queuebot import Queuebot
 
-class Playerbot(Virtualbot):
+class Playerbot(Queuebot):
 
     def __init__(self, arena_data):
 
         # Initialization
-        Virtualbot.__init__(self, arena_data)
+        super(Playerbot, self).__init__(arena_data)
         self.image_path = "img/playerbot.png"
 
         # Playerbot stuff
-        self.key_directions = [pygame.K_RIGHT, pygame.K_UP,
-                               pygame.K_LEFT, pygame.K_DOWN]
         self.shoot_lock = False
 
-
+    @Queuebot.queued
     def get_action(self, status):
-
-        self.update_status(status)
-
-        # Alias the actions for easy use
-        # This is very ugly; will try to fix later
-        LEFT_TURN = {"action": d.action.TURN,
-                     "direction": d.direction.LEFT}
-        RIGHT_TURN = {"action": d.action.TURN,
-                      "direction": d.direction.RIGHT}
-        SHOOT = {"action": d.action.SHOOT}
-        WALK = {"action": d.action.WALK,
-                "distance": 20}
-        WAIT = {"action": d.action.WAIT}
 
         # Uses pygame to retrieve all keys currently being pressed
         keys = pygame.key.get_pressed()
@@ -50,21 +34,28 @@ class Playerbot(Virtualbot):
         if keys[pygame.K_SPACE]:
             if not self.shoot_lock:
                 self.shoot_lock = True
-                return SHOOT
+                self.queue_shoot()
+                return
         else:
             self.shoot_lock = False
 
         # Check the direction keys for movement. Pressing an arrow will
-        # automatically compel the bot to turn to that direction, if not already
+        # automatically queue the bot to turn to that direction, if not already
         # facing it, before moving.
-        for i, k in enumerate(self.key_directions):
+        key_directions = [pygame.K_RIGHT, pygame.K_UP,
+                          pygame.K_LEFT, pygame.K_DOWN]
+        for i, k in enumerate(key_directions):
             if keys[k]:
                 if self.direction != i:
-                    diff = i - self.direction
-                    if diff % 4 <= 2:
-                        return LEFT_TURN
-                    else:
-                        return RIGHT_TURN
-                return WALK
+                    diff = (i - self.direction) % 4
+                    if diff == 1:
+                        self.queue_left()
+                    elif diff == 2:
+                        self.queue_reverse()
+                    elif diff == 3:
+                        self.queue_right()
+                self.queue_walk()
+                return
 
-        return WAIT
+        # If no action is being done, force the bot to stop
+        self.queue_wait()

@@ -32,8 +32,10 @@ class Queuebot(Virtualbot):
     then choose to push actions into the queue, and/or return a primitive. If
     a primitive is returned, it is given priority over anything in the queue.
     """
-    def queue(func):
+    @staticmethod
+    def queued(func):
         def decorated(self, status):
+            self.update_status(status)
             if self.command_queue:
                 return self.command_queue.popleft()
             ret = func(self, status)
