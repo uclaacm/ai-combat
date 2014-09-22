@@ -125,7 +125,9 @@ class Queuebot(Virtualbot):
         a = {"action": d.action.CONTINUE}
         self.queue_actions.append(a)
 
-    def queue_walk(self, distance=4):
+    def queue_walk(self, distance=None):
+        if distance is None:
+            distance = self.step
         a = {"action": d.action.WALK,
              "distance": distance}
         self.queue_actions.append(a)

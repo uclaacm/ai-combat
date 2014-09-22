@@ -81,7 +81,6 @@ class Stalkerbot(Navbot):
                 target_loc = (self.target["body"].left, self.target["body"].top)
                 self.set_destination(target_loc)
 
-
         else:
 
             # Wander around the arena to look for a target

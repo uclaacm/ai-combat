@@ -42,7 +42,8 @@ class Arena(Entity):
                     (0, 0, stalkerbot.Stalkerbot),
                     (200, 350, playerbot.Playerbot)]
         arena_data = {"walls": [w.body for w in self.walls.sprites()],
-                      "arena": self.body}
+                      "arena": self.body,
+                      "step": Realbot.STEP}
         for info in bot_info:
             rbot = Realbot(self, info[0], info[1])
             arena_data["bot"] = rbot.body
@@ -100,4 +101,4 @@ class Arena(Entity):
         for bot in self.bots.sprites():
             r = bot.sight_range
             c = utils.geometry.get_center(bot.body)
-            pygame.draw.circle(screen, pygame.Color("0x006600"), c, r, 1)
+            pygame.draw.circle(screen, pygame.Color("0xD8EBD8"), c, r, 1)

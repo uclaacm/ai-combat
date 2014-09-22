@@ -32,6 +32,7 @@ class Virtualbot(object):
         # Realbot information
         self.body = arena_data["bot"]
         self.direction = 0
+        self.step = arena_data["step"]
         self.image_path = None
         self.state = None
         self.hp = None

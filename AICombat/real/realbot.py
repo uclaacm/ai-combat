@@ -20,6 +20,7 @@ from utils.geometry import *
 class Realbot(Fighter):
 
     SIZE = (16, 16)
+    STEP = 20 / d.duration.WALK
 
     def __init__(self, arena, left=0, top=0):
 
@@ -30,7 +31,7 @@ class Realbot(Fighter):
         # Initialize states
         self.vbot = None
         self.ammo = 10
-        self.sight_range = 50
+        self.sight_range = 100
         self.state = {"action": d.action.WAIT}
         self.walls = [w.body for w in arena.walls.sprites()]
         ### Treat the arena boundaries as walls

@@ -74,10 +74,10 @@ class Navbot(Virtualbot):
         for x in xrange(self.arena.height):
             self.navbot_reachable.append([True] * self.arena.width)
         for w in self.walls:
-            leftbound = max(0, w.left - self.body.width)
+            leftbound = max(0, w.left - self.body.width + 1)
             rightbound = w.left + w.width
             for x in xrange(leftbound, rightbound):
-                topbound = max(0, w.top - self.body.height)
+                topbound = max(0, w.top - self.body.height + 1)
                 botbound = w.top + w.height
                 for y in xrange(topbound, botbound):
                     self.navbot_reachable[x][y] = False
