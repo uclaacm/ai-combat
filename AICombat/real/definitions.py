@@ -10,7 +10,7 @@ actions, etc.
 import random
 
 # Local imports
-from utils.enum import enum
+from utils.enum import Enum
 from utils.attrdict import AttrDict
 
 _id_database = set()
@@ -22,14 +22,14 @@ def generate_id():
     return new_id
 
 # Legal bot actions
-action = enum('WAIT',
+action = Enum('WAIT',
               'CONTINUE',
               'WALK',
               'TURN',
               'SHOOT')
 
 # Legal cardinal directions
-direction = enum('RIGHT',
+direction = Enum('RIGHT',
                  'UP',
                  'LEFT',
                  'DOWN')

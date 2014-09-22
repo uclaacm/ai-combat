@@ -1,4 +1,4 @@
-- Convert all virtualbots into Queuebots
+- Update documentation in Navbot to reflect change in API
 - Write a global config system
 - Write dirty paint mechanism
 - Package game into actual Python package

@@ -140,5 +140,5 @@ class Queuebot(Virtualbot):
         self.queue_left()
         self.queue_left()
 
-    def queue_actions(self, actions):
+    def queue_all(self, actions):
         self.queue_actions.extend(actions)

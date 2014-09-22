@@ -23,10 +23,10 @@ import heapq
 
 # Local imports
 import real.definitions as d
-from virtual.virtualbot import Virtualbot
+from virtual.queuebot import Queuebot
 from utils.comparable import Comparable
 
-class Navbot(Virtualbot):
+class Navbot(Queuebot):
 
     """
     A utility Waypoint class that defines nodes in the map for path-finding.
@@ -57,14 +57,11 @@ class Navbot(Virtualbot):
     def __init__(self, arena_data):
 
         # Initialization
-        Virtualbot.__init__(self, arena_data)
+        Queuebot.__init__(self, arena_data)
         self.image_path = "img/navbot.png"
 
         # Navbot stuff
-        self.navbot_destination = None
-        self.navbot_ready = True
         self.navbot_waypoints = []
-        self.navbot_commands = []
         self.navbot_reachable = []
 
         # Compute all reachable and unreachable pixels
@@ -83,73 +80,55 @@ class Navbot(Virtualbot):
                     self.navbot_reachable[x][y] = False
 
     """
-    Returns the current navbot destination
-    OUT: - tuple of (x, y) specifying destination
-    """
-    def get_destination(self):
-        return self.navbot_destination
-
-    """
     Computes an action sequence that will bring the bot from its current
-    position to the specified destination. The sequence will show up in
-    self.navbot_commands.
+    position to the specified destination.
     IN:  - tuple of (x, y) specifying destination
-    OUT: - boolean indicating whether a path was successfully found
+    OUT: - a list of actions to take, or None to mean that it is impossible to
+           reach that destination
     """
-    def set_destination(self, dest):
-        start = self.get_location()
+    def navigate(self, dest, start=None, direction=None):
+
+        # Initialize parameters if not given
+        if start is None:
+            start = self.get_location()
+        if direction is None:
+            direction = self.direction
 
         # Perform basic feasibility checks
+        if direction not in d.direction:
+            return None
+        if not self.arena.collidepoint(start):
+            return None
         if not self.arena.collidepoint(dest):
-            return False
-        if dest == self.navbot_destination or dest == start:
-            return True
+            return None
+        if not self.navbot_reachable[start[0]][start[1]]:
+            return None
         if not self.navbot_reachable[dest[0]][dest[1]]:
-            return False
+            return None
+        if start == dest:
+            return []
 
         # Find a path of waypoints to destination
-        path = self._find_path(start, dest)
+        path = self._find_path(start, dest, direction)
         if not path:
-            return False
+            return None
 
         # Construct command queue from path
-        self.navbot_commands = self._construct_commands(path)
-        self.navbot_destination = dest
+        return self._construct_commands(path)
 
-        # Setting a new path immediately ends the old path
-        self.navbot_ready = True
-
+    """
+    An extra queue method to supplement existing Queuebot primitives. This
+    function simply retrieves a list of actions required to navigate to dest,
+    and adds them to the queue.
+    IN:  - tuple of (x, y) specifying destination
+    OUT: - bool indicating whether a path was successfully found and queued
+    """
+    def queue_navigate(self, dest):
+        actions = self.navigate(dest)
+        if actions is None:
+            return False
+        self.queue_all(actions)
         return True
-
-    """
-    A function to tell navbot to forget its destination. This clears the command
-    sequence.
-    """
-    def forget_destination(self):
-        self.navbot_commands = []
-        self.navbot_destination = None
-
-    """
-    An overrideable function for subclasses to interface with navbot. Here, you
-    can process the realbot status and determine what to do without worrying
-    too much about how navbot works.
-    IN:  - realbot status
-    OUT: - None to let navbot navigate, or an dict specifing an action to take
-    Note that if you return any action OTHER THAN CONTINUE, the navbot will
-    terminate its navigation and clear its command queue. You would have to
-    call set_destination again to navigate somewhere.
-    """
-    def delegate_action(self, status):
-        # Here's a demo of how delegate_action can be used
-        checkpoints = [(250, 100),
-                       (0, 0),
-                       (360, 0),
-                       (11, 136),
-                       (325, 225)]
-        if not self.navbot_destination:
-            for i in xrange(len(checkpoints)-1):
-                if self.get_location() == checkpoints[i]:
-                    self.set_destination(checkpoints[i+1])
 
     """
     Main entry point from realbot into the navbot, overridden from virtualbot.
@@ -160,24 +139,17 @@ class Navbot(Virtualbot):
     IN:  - realbot status
     OUT: - dict specifying action to take
     """
+    @Queuebot.queued
     def get_action(self, status):
-
-        self.update_status(status)
-
-        self.navbot_ready = self.state['action'] == d.action.WAIT
-
-        res = self.delegate_action(status)
-        if res and res['action'] != d.action.CONTINUE:
-            self.forget_destination()
-            return res
-
-        elif self.navbot_ready and len(self.navbot_commands) > 0:
-            c = self.navbot_commands.pop()
-            if not self.navbot_commands:
-                self.navbot_destination = None
-            return c
-        else:
-            return {"action": d.action.CONTINUE}
+        # Here's a demo of how navigate can be used
+        checkpoints = [(250, 100),
+                       (0, 0),
+                       (360, 0),
+                       (11, 136),
+                       (325, 225)]
+        for i in xrange(len(checkpoints)-1):
+            if self.get_location() == checkpoints[i]:
+                self.queue_navigate(checkpoints[i+1])
 
     """
     Private function that takes a path of waypoints and converts it into a
@@ -195,7 +167,7 @@ class Navbot(Virtualbot):
         cur_dir = self.direction
         for i in xrange(1, len(path)):
             cur = path[i]
-            move_dir = self._get_direction(prev, cur)
+            move_dir = self._calculate_direction(prev, cur)
             diff = move_dir - cur_dir
             if diff % 4 == 1:
                 commands.append(LEFT_TURN)
@@ -212,7 +184,6 @@ class Navbot(Virtualbot):
                 WALK["distance"] = dist
                 commands.append(copy.copy(WALK))
             prev = cur
-        commands.reverse()
         return commands
 
     """
@@ -227,7 +198,7 @@ class Navbot(Virtualbot):
          - tuple indicating destination point
     OUT: - direction from start to dest, -1 if not a defined direction
     """
-    def _get_direction(self, start, dest):
+    def _calculate_direction(self, start, dest):
         x_diff = dest[0] - start[0]
         y_diff = dest[1] - start[1]
         if not y_diff:
@@ -252,7 +223,7 @@ class Navbot(Virtualbot):
          - tuple indicating destination point
     OUT: - list containing points to follow to get to destination
     """
-    def _find_path(self, start, dest):
+    def _find_path(self, start, dest, direction):
 
         # These difference offsets are used to place intermediate waypoints on
         # the axes of the destination
@@ -261,7 +232,7 @@ class Navbot(Virtualbot):
 
         # targets is a min-heap that contains candidate waypoints for visiting
         targets = []
-        heapq.heappush(targets, Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None, self.direction))
+        heapq.heappush(targets, Navbot.Waypoint(start[0], start[1], self._heuristic(start, dest), 0, None, direction))
 
         # waypoints save information about each visited waypoint
         waypoints = {}

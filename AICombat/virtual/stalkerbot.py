@@ -16,6 +16,7 @@ import real.definitions as d
 import utils.geometry as g
 from real.bullet import Bullet
 from virtual.navbot import Navbot
+from virtual.queuebot import Queuebot
 
 class Stalkerbot(Navbot):
 
@@ -33,6 +34,8 @@ class Stalkerbot(Navbot):
         self.shoot_counter = 0
         self.search_cooldown = lambda: random.randint(3,7)
         self.search_counter = 0
+        ### Preempt Queuebot, because Stalkerbot needs to adapt to environment
+        self.preempt_queue()
 
     """
     Reset variables and choose a new target to stalk
@@ -49,7 +52,8 @@ class Stalkerbot(Navbot):
     the enemy comes within firing range. Stalkerbot periodically updates its
     target's position (respecting a search cooldown).
     """
-    def delegate_action(self, status):
+    @Queuebot.queued
+    def get_action(self, status):
 
         # Cool down
         self.shoot_counter -= 1
@@ -79,15 +83,18 @@ class Stalkerbot(Navbot):
             if self.search_counter <= 0:
                 self.search_counter = self.search_cooldown()
                 target_loc = (self.target["body"].left, self.target["body"].top)
-                self.set_destination(target_loc)
+                self.clear_queue()
+                self.queue_navigate(target_loc)
+                return
 
         else:
 
             # Wander around the arena to look for a target
-            while not self.get_destination():
+            while True:
                 x = random.randrange(self.arena.width)
                 y = random.randrange(self.arena.height)
-                self.set_destination((x, y))
+                if self.queue_navigate((x, y)):
+                    break
 
     """
     Given a target's position, this method determines whether a bullet shot by
