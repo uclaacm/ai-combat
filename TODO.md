@@ -1,6 +1,4 @@
-- Document stalkerbot
-- Document playerbot
-- Write a decorator system to provide a more dev-friendly interface for writing virtualbots
+- Convert all virtualbots into Queuebots
 - Write a global config system
 - Write dirty paint mechanism
 - Package game into actual Python package
