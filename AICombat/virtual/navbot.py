@@ -1,20 +1,22 @@
 """
 navbot.py
 
-A base virtualbot class that implements many useful navigation functions.
-Subclasses of navbot should interface with it as follows:
+A virtualbot class that builds on top of Queuebot and implements useful
+navigation functions. Subclasses of navbot should interface with it as follows:
 
-For simple usage of its navigation system, override delegate_action()
-and call set_destination() to wherever you need to travel. Let it travel
-by returning None. If you want it to perform some other action, return that
-action. Note that set_destination() will return a boolean indicating whether it
-managed to find a path or not.
+For a basic usage of its navigation system, call the navigate() with a
+destination parameter, and it will return a list of actions to take to get
+there. Alternatively, you can call queue_navigate() to automatically add the
+actions into the Queuebot queue (see documentation on how Queuebot works). The
+navigate function also supports a start and direction parameters if you don't
+want to use the bot's current location and direction.
 
-If you want full control over navbot, override the get_action function. At the
-very least you must manually call update_status() before you use
-set_destination(), or the computed path may not be accurate. You must also
-manage navbot_commands, which list the actions necessary to follow the computed
-path after a set_destination() call.
+Usually you will want to retain control of the bot while it's navigating to a
+destination. In this case, you must enable preemption on Queuebot, and monitor
+the status of the queue yourself. Note that if you interrupt a navigation
+action sequence to perform an action, most of the time your navigation sequence
+will be invalidated (for instance, you suddenly decide to turn around, or
+prematurely cancel a long walk), and you must clear the queue and re-navigate.
 """
 
 # Global imports

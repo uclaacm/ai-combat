@@ -7,6 +7,14 @@ Contains utility resource loading functions
 
 import pygame
 
+"""
+Loads an image
+IN:  - string representing path to image
+     - optional pygame.Color specifying the colorkey for the image, which
+       determines what color should be transparent
+OUT: - pygame.Surface of the image
+     - pygame.Rect of the image
+"""
 def load_image(name, colorkey=None):
     try:
         image = pygame.image.load(name)
@@ -19,6 +27,11 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey, pygame.RLEACCEL)
     return image, image.get_rect()
 
+"""
+Loads a sound file
+IN:  - string representing path to sound file
+OUT: - pygame.mixer.Sound object representing the waveform
+"""
 def load_sound(name):
     class NoneSound(object):
         def play(self):

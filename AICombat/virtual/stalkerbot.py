@@ -46,10 +46,10 @@ class Stalkerbot(Navbot):
         return random.choice(enemies)
 
     """
-    Overridden from Navbot. Most of the time, Stalkerbot is navigating to a
-    specific point in the arena, which it lets Navbot handle. However, if it's
-    stalking an enemy, it will shoot (respecting a shoot cooldown) every time
-    the enemy comes within firing range. Stalkerbot periodically updates its
+    Most of the time, Stalkerbot has queued navigation path to a specific point
+    in the arena. However, if it's stalking an enemy, it will shoot (respecting
+    a shoot cooldown) every time the enemy comes within firing range.
+    Stalkerbot periodically updates its navigation sequence to home in on the
     target's position (respecting a search cooldown).
     """
     @Queuebot.queued
@@ -67,29 +67,31 @@ class Stalkerbot(Navbot):
             if not self.target:
                 self.target = self.switch_target(enemies)
             else:
+                ### Try to find the current target
                 t = [e for e in enemies if e["eid"] == self.target["eid"]]
                 if not t:
                     self.target = self.switch_target(enemies)
                 else:
                     self.target = t[0]
 
-            # See if it can shoot the target
+            # See if the bot can shoot the target
             if self.shoot_counter <= 0 and self.can_hit(self.target["body"]):
                 self.shoot_counter = self.shoot_cooldown()
+                ### Set search counter to zero, because the act of shooting
+                ### may disrupt navigation sequence
                 self.search_counter = 0
                 return {"action": d.action.SHOOT}
 
-            # Periodically update target coordinates
+            # Periodically update the path to target
             if self.search_counter <= 0:
                 self.search_counter = self.search_cooldown()
                 target_loc = (self.target["body"].left, self.target["body"].top)
                 self.clear_queue()
                 self.queue_navigate(target_loc)
-                return
 
         else:
 
-            # Wander around the arena to look for a target
+            # Wander around the arena to look for a new target
             while True:
                 x = random.randrange(self.arena.width)
                 y = random.randrange(self.arena.height)
