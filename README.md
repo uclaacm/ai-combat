@@ -18,9 +18,18 @@ the engine and game logic.
 Our project is still in its very early stages! Stay tuned for more progress
 over the upcoming months.
 
+As of current, a basic game engine is in place and several primitive bots have
+been implemented. These include a playerbot that the user can control, and an
+aggressive stalkerbot that chase other bots to attack them.
+
+The sprite textures are still placeholders at the moment, until we can find
+proper images to use.
+
+![screenshot](screenshot.png "Still in development!")
+
 # Running #
 
-To run AI Combat simply execute:
+To run AI Combat, simply execute:
 
     python AICombat/AICombat.py
 

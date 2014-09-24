@@ -92,11 +92,10 @@ class Stalkerbot(Navbot):
         else:
 
             # Wander around the arena to look for a new target
-            while True:
+            while self.is_queue_empty():
                 x = random.randrange(self.arena.width)
                 y = random.randrange(self.arena.height)
-                if self.queue_navigate((x, y)):
-                    break
+                self.queue_navigate((x, y))
 
     """
     Given a target's position, this method determines whether a bullet shot by
