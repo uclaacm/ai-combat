@@ -8,7 +8,7 @@ Maintains the list of bots and other objects.
 import pygame
 
 # Local imports
-import utils.geometry
+import utils.geometry as g
 from real.realbot import Realbot
 from real.entity import Entity
 from real.wall import Wall
@@ -35,12 +35,12 @@ class Arena(Entity):
         # Initialize real bots
         # For now, hardcode in bots for testing
         self.bots = pygame.sprite.LayeredUpdates()
-        bot_info = [(10, 100, dumbbot.Dumbbot),
-                    (200, 100, dumbbot.Dumbbot),
-                    (250, 100, navbot.Navbot),
-                    (350, 250, stalkerbot.Stalkerbot),
-                    (0, 0, stalkerbot.Stalkerbot),
-                    (200, 350, playerbot.Playerbot)]
+        bot_info = [(10, 100, Dumbbot),
+                    (200, 100, Dumbbot),
+                    (250, 100, Navbot),
+                    (350, 250, Stalkerbot),
+                    (0, 0, Stalkerbot),
+                    (200, 350, Playerbot)]
         arena_data = {"walls": [w.body for w in self.walls.sprites()],
                       "arena": self.body,
                       "step": Realbot.STEP}
@@ -100,5 +100,5 @@ class Arena(Entity):
     def draw_sight(self, screen):
         for bot in self.bots.sprites():
             r = bot.sight_range
-            c = utils.geometry.get_center(bot.body)
+            c = g.get_center(bot.body)
             pygame.draw.circle(screen, pygame.Color("0xD8EBD8"), c, r, 1)

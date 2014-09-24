@@ -8,7 +8,6 @@ calculations.
 # Global imports
 import pygame
 import math
-import copy
 
 """
 Infinity constants
@@ -91,7 +90,7 @@ def collide_rect_circle(rect, circle):
     if dist > r2 + enclosing_circle_radius:
         return False
 
-    # Check #3: 
+    # Check #3:
     # Inscribe a circle inside the rect and do a distance check
     # If the circle does collide, then the rect also must
     inscribed_circle_radius = get_min_rad(rect)

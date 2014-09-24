@@ -13,9 +13,9 @@ import pygame
 
 # Local imports
 import real.definitions as d
+import utils.geometry as g
 from real.fighter import Fighter
 from real.bullet import Bullet
-from utils.geometry import *
 
 class Realbot(Fighter):
 
@@ -93,9 +93,9 @@ class Realbot(Fighter):
             if ("distance" not in decision or
                 decision["distance"] <= 0):
                 return
-            max_distance = predict_collision(self.body, self.walls,
-                                             d.DX[self.direction],
-                                             d.DY[self.direction])
+            max_distance = g.predict_collision(self.body, self.walls,
+                                               d.DX[self.direction],
+                                               d.DY[self.direction])
             self.state["max_distance"] = max_distance
             self.state["action"] = d.action.WALK
             self.state["distance"] = decision["distance"]
@@ -114,8 +114,9 @@ class Realbot(Fighter):
         # If shoot, toggle action state and materialize the bullet
         elif decision['action'] == d.action.SHOOT:
             # Center bullet on bot's position
-            bullet_body = scale(self.body, Bullet.SIZE)
-            arena.others.add(Bullet(self, self.walls, self.direction, bullet_body.left, bullet_body.top))
+            bullet_body = g.scale(self.body, Bullet.SIZE)
+            bullet = Bullet(self, self.walls, self.direction, bullet_body.left, bullet_body.top)
+            arena.others.add(bullet)
             self.state["action"] = d.action.SHOOT
             self.state["cooldown"] = d.duration.SHOOT
 
@@ -215,12 +216,12 @@ class Realbot(Fighter):
         # Objects of interest in sight range
         status["objects"] = {}
         status["objects"]["bots"] = []
-        center = get_center(self.body)
+        center = g.get_center(self.body)
         # Temporary sight method: circle
         r = self.sight_range
         sight = pygame.Rect(center[0], center[1], r, r)
         for entity in arena.bots.sprites():
-            if entity != self and collide_rect_circle(entity.body, sight):
+            if entity != self and g.collide_rect_circle(entity.body, sight):
                 status["objects"]["bots"].append(entity.get_info())
         status["objects"]["projectiles"] = []
         status["objects"]["items"] = []

@@ -9,8 +9,8 @@ import pygame
 
 # Local imports
 import real.definitions as d
+import utils.geometry as g
 from real.fighter import Fighter
-from utils.geometry import predict_collision
 
 class Bullet(Fighter):
 
@@ -29,7 +29,7 @@ class Bullet(Fighter):
         self.dmg = 15
         self.vel = (self.speed * d.DX[self.direction],
                     self.speed * d.DY[self.direction])
-        self.max_dist = predict_collision(self.body, walls, *self.vel)
+        self.max_dist = g.predict_collision(self.body, walls, *self.vel)
 
     """
     Called once per game loop iteration
